@@ -1,1 +1,1749 @@
-{"openapi": "3.0.2", "info": {"title": "LightStands", "version": "0.1.0"}, "paths": {"/self/settings": {"get": {"tags": ["self"], "summary": "Public Settings", "description": "Get server public settings.", "operationId": "public_settings_self_settings_get", "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ServerPublicSettings"}}}}}}}, "/self/~generate-204": {"get": {"tags": ["self"], "summary": "Generate 204", "description": "Generate a 204 response", "operationId": "generate_204_self__generate_204_get", "responses": {"204": {"description": "Successful Response"}}}}, "/self/server-load": {"get": {"tags": ["self"], "summary": "Server Load Details", "description": "Simple server load details.", "operationId": "server_load_details_self_server_load_get", "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ServerLoadCapture"}}}}}, "deprecated": true}}, "/users/creation_requests/{req_id}": {"put": {"tags": ["users", "creation requests"], "summary": "Put Creation Request", "description": "Request user creation (or registration) process. The `req_id` should be in format \"\\<verification_kind\\>:\\<verification_identity\\>\".\n\nSupported verification kind(s):\n- `email`: the identity should be the email address\n\nPossible Restful errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised. (HTTP 400)\n- `bot`: You are being detected as a bot. (HTTP 403)\n- `hcaptcharequired`: This endpoint requires hcaptcha verification. (HTTP 403)", "operationId": "put_creation_request_users_creation_requests__req_id__put", "parameters": [{"required": true, "schema": {"title": "Req Id", "type": "string"}, "name": "req_id", "in": "path"}], "requestBody": {"content": {"application/x-www-form-urlencoded": {"schema": {"$ref": "#/components/schemas/Body_put_creation_request_users_creation_requests__req_id__put"}}}}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreationRequestCreated"}}}}, "400": {"description": "Bad Request", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "403": {"description": "Forbidden", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/users/creation_requests/{req_id}/~request-verify": {"post": {"tags": ["users", "creation requests"], "summary": "Request Creation Verification", "description": "Request verification for a creation request. The actual behaviour depends on the verification kind defined in identity.\nThe return is expected to have two states: Requested or InitFailed.\n\nPossible errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised.\n\nInitFailed possible reasons:\n- General:\n    - `unsupported`: the server is not configured to support this method.\n    - `not-required`: this method doesn't need this step.\n- For `email` kind:\n    - `throttled`: your request is being throttled.", "operationId": "request_creation_verification_users_creation_requests__req_id___request_verify_post", "parameters": [{"required": true, "schema": {"title": "Req Id", "type": "string"}, "name": "req_id", "in": "path"}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"title": "Response Request Creation Verification Users Creation Requests  Req Id   Request Verify Post", "anyOf": [{"$ref": "#/components/schemas/VerificationRequested"}, {"$ref": "#/components/schemas/VerificationInitFailed"}]}}}}, "404": {"description": "Not Found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/users/creation_requests/{req_id}/~resolve": {"post": {"tags": ["users", "creation requests"], "summary": "Resolve Creation Request", "description": "Try to resolve the creation request.\n\nPossible errors:\n- `notfound(req_id)`\n- `exists(username)`", "operationId": "resolve_creation_request_users_creation_requests__req_id___resolve_post", "parameters": [{"required": true, "schema": {"title": "Req Id", "type": "string"}, "name": "req_id", "in": "path"}], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreationRequestFinal"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"title": "Response Resolve Creation Request Users Creation Requests  Req Id   Resolve Post", "anyOf": [{"$ref": "#/components/schemas/CreationRequestResolved"}, {"$ref": "#/components/schemas/CreationRequestUnresolved"}]}}}}, "404": {"description": "Not Found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "409": {"description": "Conflict", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/users/creation_requests/{req_id}/~check-challenge": {"post": {"tags": ["users", "creation requests"], "summary": "Check Challenge", "description": "Check if the challenge can be completed by the code.\n\nPossible errors:\n- `notfound(req_id)`", "operationId": "check_challenge_users_creation_requests__req_id___check_challenge_post", "parameters": [{"required": true, "schema": {"title": "Req Id", "type": "string"}, "name": "req_id", "in": "path"}], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ChallengeCheck"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ChallengeAnswer"}}}}, "404": {"description": "Not Found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/users/{userid}/~change-password": {"post": {"tags": ["users", "user information"], "summary": "Change Password", "description": "Change password for a user. A user can change it's password.\nRequires scope: `user.change_password`.\n\nPossible errors:\n- `unauthorised`\n- `scopenotcovered`", "operationId": "change_password_users__userid___change_password_post", "parameters": [{"required": true, "schema": {"title": "Userid", "type": "integer"}, "name": "userid", "in": "path"}], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/PasswordChangeRequest"}}}, "required": true}, "responses": {"204": {"description": "Successful Response"}, "401": {"description": "Unauthorized", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "403": {"description": "Forbidden", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/access-tokens/~revoke": {"post": {"tags": ["sessions"], "summary": "Revoke Session", "description": "Revoke a session by the access token or the refresh token.\n`token_type` is the type of `token`, should be one of:\n- `access_token`\n- `refresh_token`\n\nIf revoking by a refresh token, this request must be:\n- authorized by the session itself.\n- authorized as another session with scope `session.revoke_other`, which have been created at least 24 hours.\n\nPossible RPC errors:\n- `conditionrequires(token_type,token,created_at)`\n- `badformat(token_type)`\n- `notfound(token_type,token)`", "operationId": "revoke_session_access_tokens__revoke_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/RevokingAccessTokenRequest"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RevokingCompleted"}}}}, "400": {"description": "Bad Request", "content": {"application/json": {"schema": {"title": "Response 400 Revoke Session Access Tokens  Revoke Post", "anyOf": [{"$ref": "#/components/schemas/RevokingRequiresAge"}, {"$ref": "#/components/schemas/APIResErrBase"}]}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/access-tokens/specific/{ref_tok}": {"get": {"tags": ["sessions"], "summary": "Get Access Token By Refresh Token", "description": "Get an access token object by refresh token. Requires `session.list` scope.\n\nRefresh tokens can be used to refresh expired time without granting access to account,\nalso act as unique identity to access token.\n\nAccess token itself should remain as secret and keep on the device.\n\nPossible errors:\n- `notfound(ref_tok)`", "operationId": "get_access_token_by_refresh_token_access_tokens_specific__ref_tok__get", "parameters": [{"required": true, "schema": {"title": "Ref Tok", "type": "string"}, "name": "ref_tok", "in": "path"}], "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AccessTokenResult"}}}}, "404": {"description": "Not Found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/access-tokens/~create-by-password": {"post": {"tags": ["sessions"], "summary": "Create Access Token By Password", "description": "Create a new access token by password.\n\nIf `user_agent_id` is not null, this endpoint will try to return a recent access token matches `user_agent_id`.\n\n`user_agent_id` and `user_agent` will be applied to new access token if creating is required.\n\nPossible RPC errors:\n- `notfound(username,password)`\n- `conditionrequires(scope)`", "operationId": "create_access_token_by_password_access_tokens__create_by_password_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/PasswordAccessTokenCreating"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AccessTokenCreated"}}}}, "400": {"description": "Bad Request", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/access-tokens/~create": {"post": {"tags": ["sessions"], "summary": "Create Access Token", "description": "Create another access token. Requires scope `user.create_session`.\n\nPossible RPC errors:\n- `conditionrequires(scope,access_token.scope)`\n- `notfound(clientid)`\n- `notfound(auth_code)`: the authorization code is not found or is expired.", "operationId": "create_access_token_access_tokens__create_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/SessionAccessTokenCreating"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AccessTokenCreated"}}}}, "400": {"description": "Bad Request", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/APIResErrBase"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/access-tokens/specific/{ref_tok}/~refresh": {"post": {"tags": ["sessions"], "summary": "Update Token Expiring Time", "description": "Update expired_at to `target`. If `target` is smaller than the current value, success with doing nothing.\nIf `target` is not within 52 weeks of now, set to 52 weeks. The time accuracy only is seconds level.\n\nPossible RESTful errors:\n- `notfound(ref_tok)`, 404", "operationId": "update_token_expiring_time_access_tokens_specific__ref_tok___refresh_post", "parameters": [{"required": true, "schema": {"title": "Ref Tok", "type": "string"}, "name": "ref_tok", "in": "path"}], "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/UpdateTokenExpiringTime"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TokenUpdated"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/oauth2/~authorize": {"get": {"tags": ["oauth2"], "summary": "Oauth2 Authorize", "description": "Start OAuth 2 authorization process.\n\n`ua_id` is the user agent identity, a string can be hopefully unique to other user agent.\nLightStands APIs will try to assign same session for same user agent identity,\nwhich can help to aganist some browsers that frequently removes the local storages.\n\nOAuth 2 PKCE extension is required for LightStands OAuth 2 process.\n\nMax lengths:\n- `state`: 512 bytes\n- `ua_id`: 256 bytes\n- `code_challenge`: 64 bytes", "operationId": "oauth2_authorize_oauth2__authorize_get", "parameters": [{"required": true, "schema": {"title": "Response Type", "type": "string"}, "name": "response_type", "in": "query"}, {"required": true, "schema": {"title": "Client Id", "type": "string"}, "name": "client_id", "in": "query"}, {"required": true, "schema": {"title": "Redirect Uri", "type": "string"}, "name": "redirect_uri", "in": "query"}, {"required": true, "schema": {"title": "Scope", "type": "string"}, "name": "scope", "in": "query"}, {"required": true, "schema": {"title": "Code Challenge", "type": "string"}, "name": "code_challenge", "in": "query"}, {"required": true, "schema": {"title": "Code Challenge Method", "type": "string"}, "name": "code_challenge_method", "in": "query"}, {"required": false, "schema": {"title": "State", "type": "string"}, "name": "state", "in": "query"}, {"required": false, "schema": {"title": "Ua Id", "type": "string"}, "name": "ua_id", "in": "query"}], "responses": {"302": {"description": "Successful Response", "headers": {"Location": {"description": "Redirecting location", "schema": {"type": "url"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/oauth2/~complete": {"get": {"tags": ["oauth2"], "summary": "Oauth2 Complete Process", "description": "Complete OAuth 2 process, jump to the application.\nThis endpoint is called by LightStands web application, third-party applications should not use it.", "operationId": "oauth2_complete_process_oauth2__complete_get", "parameters": [{"required": true, "schema": {"title": "Auth Code", "type": "string"}, "name": "auth_code", "in": "query"}, {"required": true, "schema": {"title": "Redirect Uri", "type": "string"}, "name": "redirect_uri", "in": "query"}, {"required": true, "schema": {"title": "Confirmed", "type": "boolean"}, "name": "confirmed", "in": "query"}], "responses": {"302": {"description": "Successful Response", "headers": {"Location": {"description": "Redirecting location", "schema": {"type": "url"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/oauth2/~token": {"post": {"tags": ["oauth2"], "summary": "Oauth2 Exchange Access Token", "description": "Exchange authorization code for access token.\n\n`client_secret` is required when the application have `client_secret`, otherwise the field will be ignored.", "operationId": "oauth2_exchange_access_token_oauth2__token_post", "requestBody": {"content": {"application/x-www-form-urlencoded": {"schema": {"$ref": "#/components/schemas/Body_oauth2_exchange_access_token_oauth2__token_post"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AuthorizationCodeResponse"}}}}, "400": {"description": "Bad Request", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OAuth2ErrorResponse"}}}}, "401": {"description": "Unauthorized", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OAuth2ErrorResponse"}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}}, "components": {"schemas": {"APIResErrBase": {"title": "APIResErrBase", "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": false}, "errors": {"title": "Errors", "type": "object", "additionalProperties": {"type": "string"}}}, "example": {"ok": false, "errors": {"badformat(any_name)": "any_name should be in format \"any\\_<name>\""}}}, "AccessTokenCreated": {"title": "AccessTokenCreated", "required": ["access_token"], "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": true}, "access_token": {"$ref": "#/components/schemas/UserPrivateAccessToken"}}}, "AccessTokenResult": {"title": "AccessTokenResult", "required": ["access_token"], "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": true}, "access_token": {"$ref": "#/components/schemas/UserPrivateAccessTokenWithoutToken"}}}, "AuthorizationCodeResponse": {"title": "AuthorizationCodeResponse", "required": ["access_token", "token_type", "expires_in", "refresh_token", "scope"], "type": "object", "properties": {"access_token": {"title": "Access Token", "type": "string"}, "token_type": {"title": "Token Type", "type": "string"}, "expires_in": {"title": "Expires In", "type": "integer"}, "refresh_token": {"title": "Refresh Token", "type": "string"}, "scope": {"title": "Scope", "type": "string"}}}, "Body_oauth2_exchange_access_token_oauth2__token_post": {"title": "Body_oauth2_exchange_access_token_oauth2__token_post", "required": ["grant_type", "code", "redirect_uri", "client_id", "code_verifier"], "type": "object", "properties": {"grant_type": {"title": "Grant Type", "type": "string"}, "code": {"title": "Code", "type": "string"}, "redirect_uri": {"title": "Redirect Uri", "type": "string"}, "client_id": {"title": "Client Id", "type": "string"}, "client_secret": {"title": "Client Secret", "type": "string"}, "code_verifier": {"title": "Code Verifier", "type": "string"}}}, "Body_put_creation_request_users_creation_requests__req_id__put": {"title": "Body_put_creation_request_users_creation_requests__req_id__put", "type": "object", "properties": {"h-captcha-response": {"title": "H-Captcha-Response", "type": "string"}}}, "ChallengeAnswer": {"title": "ChallengeAnswer", "required": ["ok", "challenge"], "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean"}, "challenge": {"title": "Challenge", "type": "string"}}}, "ChallengeCheck": {"title": "ChallengeCheck", "required": ["challenge"], "type": "object", "properties": {"challenge": {"title": "Challenge", "type": "string"}}}, "CreationRequestCreated": {"title": "CreationRequestCreated", "required": ["creation_request"], "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": true}, "creation_request": {"$ref": "#/components/schemas/UserPrivateCreationRequest"}}}, "CreationRequestFinal": {"title": "CreationRequestFinal", "required": ["username", "challenge"], "type": "object", "properties": {"username": {"title": "Username", "maxLength": 24, "minLength": 5, "type": "string"}, "challenge": {"title": "Challenge", "type": "string"}}}, "CreationRequestResolved": {"title": "CreationRequestResolved", "required": ["creation_request", "user", "access_token", "challenge"], "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": true}, "creation_request": {"$ref": "#/components/schemas/UserPrivateCreationRequest"}, "user": {"$ref": "#/components/schemas/UserPrivateUser"}, "access_token": {"$ref": "#/components/schemas/UserPrivateAccessToken"}, "challenge": {"title": "Challenge", "type": "string"}}}, "CreationRequestUnresolved": {"title": "CreationRequestUnresolved", "required": ["creation_request", "challenge"], "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": false}, "creation_request": {"$ref": "#/components/schemas/UserPrivateCreationRequest"}, "challenge": {"title": "Challenge", "type": "string"}}}, "DateTime": {"title": "DateTime", "type": "object", "properties": {"timezone_offset_hour": {"title": "Timezone Offset Hour", "type": "integer", "default": 0}, "timezone_offset_second": {"title": "Timezone Offset Second", "type": "integer", "default": 0}, "year": {"title": "Year", "type": "integer", "default": 0}, "month": {"title": "Month", "type": "integer", "default": 0}, "day": {"title": "Day", "type": "integer", "default": 0}, "hour": {"title": "Hour", "type": "integer", "default": 0}, "minute": {"title": "Minute", "type": "integer", "default": 0}, "second": {"title": "Second", "type": "integer", "default": 0}, "microsecond": {"title": "Microsecond", "type": "integer", "default": 0}}}, "HTTPValidationError": {"title": "HTTPValidationError", "type": "object", "properties": {"detail": {"title": "Detail", "type": "array", "items": {"$ref": "#/components/schemas/ValidationError"}}}}, "OAuth2ErrorResponse": {"title": "OAuth2ErrorResponse", "required": ["error", "error_description"], "type": "object", "properties": {"error": {"title": "Error", "type": "string"}, "error_description": {"title": "Error Description", "type": "string"}, "error_uri": {"title": "Error Uri", "type": "string"}, "state": {"title": "State", "type": "string"}}}, "PasswordAccessTokenCreating": {"title": "PasswordAccessTokenCreating", "required": ["clientid", "scope", "username", "password"], "type": "object", "properties": {"clientid": {"title": "Clientid", "type": "string"}, "scope": {"title": "Scope", "type": "string"}, "user_agent_id": {"title": "User Agent Id", "type": "string"}, "user_agent": {"$ref": "#/components/schemas/UserAgent"}, "username": {"title": "Username", "type": "string"}, "password": {"title": "Password", "type": "string"}}}, "PasswordChangeRequest": {"title": "PasswordChangeRequest", "type": "object", "properties": {"new_password": {"title": "New Password", "type": "string"}}}, "RevokingAccessTokenRequest": {"title": "RevokingAccessTokenRequest", "required": ["token_type", "token"], "type": "object", "properties": {"token_type": {"title": "Token Type", "anyOf": [{"enum": ["access_token"], "type": "string"}, {"enum": ["refresh_token"], "type": "string"}]}, "token": {"title": "Token", "type": "string"}}}, "RevokingCompleted": {"title": "RevokingCompleted", "required": ["access_token"], "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": true}, "access_token": {"$ref": "#/components/schemas/UserPrivateAccessTokenWithoutToken"}}}, "RevokingRequiresAge": {"title": "RevokingRequiresAge", "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": false}, "errors": {"title": "Errors", "type": "object", "additionalProperties": {"type": "string"}, "default": {"conditionrequires(token_type,token,created_at)": "revoking the another token by the refresh token requires a session ages 24 hours at least."}}}, "example": {"ok": false, "errors": {"conditionrequires(token_type,token,created_at)": "revoking the another token by the refresh token requires a session ages 24 hours at least."}}}, "ServerLoadCapture": {"title": "ServerLoadCapture", "required": ["loader_in_queue", "loader_throttle_remaining"], "type": "object", "properties": {"loader_in_queue": {"title": "Loader In Queue", "type": "integer"}, "loader_throttle_remaining": {"title": "Loader Throttle Remaining", "type": "integer"}}}, "ServerPublicSettings": {"title": "ServerPublicSettings", "required": ["api_layer_version"], "type": "object", "properties": {"api_layer_version": {"title": "Api Layer Version", "type": "integer"}, "hcaptcha_site_key": {"title": "Hcaptcha Site Key", "type": "string"}}}, "SessionAccessTokenCreating": {"title": "SessionAccessTokenCreating", "required": ["clientid", "scope"], "type": "object", "properties": {"clientid": {"title": "Clientid", "type": "string"}, "scope": {"title": "Scope", "type": "string"}, "user_agent_id": {"title": "User Agent Id", "type": "string"}, "user_agent": {"$ref": "#/components/schemas/UserAgent"}, "auth_code": {"title": "Auth Code", "type": "string"}}}, "TokenUpdated": {"title": "TokenUpdated", "required": ["access_token"], "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": true}, "access_token": {"$ref": "#/components/schemas/UserPrivateAccessTokenWithoutToken"}}}, "UpdateTokenExpiringTime": {"title": "UpdateTokenExpiringTime", "required": ["target"], "type": "object", "properties": {"target": {"$ref": "#/components/schemas/DateTime"}}}, "UserAgent": {"title": "UserAgent", "type": "object", "properties": {"p": {"title": "P", "maxLength": 24, "type": "string"}, "dev": {"title": "Dev", "maxLength": 64, "type": "string"}}}, "UserPrivateAccessToken": {"title": "UserPrivateAccessToken", "required": ["userid", "refresh_token", "expired_at", "created_at", "active", "scope", "updated_at", "token"], "type": "object", "properties": {"userid": {"title": "Userid", "type": "integer"}, "refresh_token": {"title": "Refresh Token", "type": "string"}, "expired_at": {"title": "Expired At", "type": "string", "format": "date-time"}, "created_at": {"title": "Created At", "type": "string", "format": "date-time"}, "active": {"title": "Active", "type": "boolean"}, "appid": {"title": "Appid", "type": "integer"}, "scope": {"title": "Scope", "type": "string"}, "updated_at": {"title": "Updated At", "type": "string", "format": "date-time"}, "user_agent": {"$ref": "#/components/schemas/UserAgent"}, "token": {"title": "Token", "type": "string"}}}, "UserPrivateAccessTokenWithoutToken": {"title": "UserPrivateAccessTokenWithoutToken", "required": ["userid", "refresh_token", "expired_at", "created_at", "active", "scope", "updated_at"], "type": "object", "properties": {"userid": {"title": "Userid", "type": "integer"}, "refresh_token": {"title": "Refresh Token", "type": "string"}, "expired_at": {"title": "Expired At", "type": "string", "format": "date-time"}, "created_at": {"title": "Created At", "type": "string", "format": "date-time"}, "active": {"title": "Active", "type": "boolean"}, "appid": {"title": "Appid", "type": "integer"}, "scope": {"title": "Scope", "type": "string"}, "updated_at": {"title": "Updated At", "type": "string", "format": "date-time"}, "user_agent": {"$ref": "#/components/schemas/UserAgent"}}}, "UserPrivateCreationRequest": {"title": "UserPrivateCreationRequest", "required": ["identifier", "challenge_failed_counter", "created_at", "request_verification_counter", "resolved"], "type": "object", "properties": {"identifier": {"title": "Identifier", "type": "string"}, "challenge_failed_counter": {"title": "Challenge Failed Counter", "type": "integer"}, "created_at": {"title": "Created At", "type": "string", "format": "date-time"}, "request_verification_at": {"title": "Request Verification At", "type": "string", "format": "date-time"}, "request_verification_counter": {"title": "Request Verification Counter", "type": "integer"}, "resolved": {"title": "Resolved", "type": "boolean"}}}, "UserPrivateUser": {"title": "UserPrivateUser", "required": ["userid", "username", "created_at"], "type": "object", "properties": {"userid": {"title": "Userid", "type": "integer"}, "username": {"title": "Username", "type": "string"}, "email": {"title": "Email", "type": "string"}, "created_at": {"title": "Created At", "type": "string", "format": "date-time"}}}, "ValidationError": {"title": "ValidationError", "required": ["loc", "msg", "type"], "type": "object", "properties": {"loc": {"title": "Location", "type": "array", "items": {"anyOf": [{"type": "string"}, {"type": "integer"}]}}, "msg": {"title": "Message", "type": "string"}, "type": {"title": "Error Type", "type": "string"}}}, "VerificationInitFailed": {"title": "VerificationInitFailed", "required": ["creation_request", "reason"], "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": false}, "creation_request": {"$ref": "#/components/schemas/UserPrivateCreationRequest"}, "reason": {"title": "Reason", "type": "string"}}}, "VerificationRequested": {"title": "VerificationRequested", "required": ["creation_request"], "type": "object", "properties": {"ok": {"title": "Ok", "type": "boolean", "default": true}, "creation_request": {"$ref": "#/components/schemas/UserPrivateCreationRequest"}}}}}}
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "LightStands",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/self/settings": {
+            "get": {
+                "tags": [
+                    "self"
+                ],
+                "summary": "Public Settings",
+                "description": "Get server public settings.",
+                "operationId": "public_settings_self_settings_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerPublicSettings"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/self/~generate-204": {
+            "get": {
+                "tags": [
+                    "self"
+                ],
+                "summary": "Generate 204",
+                "description": "Generate a 204 response",
+                "operationId": "generate_204_self__generate_204_get",
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    }
+                }
+            }
+        },
+        "/self/server-load": {
+            "get": {
+                "tags": [
+                    "self"
+                ],
+                "summary": "Server Load Details",
+                "description": "Simple server load details.",
+                "operationId": "server_load_details_self_server_load_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerLoadCapture"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": true
+            }
+        },
+        "/users/creation_requests/{req_id}": {
+            "put": {
+                "tags": [
+                    "users",
+                    "creation requests"
+                ],
+                "summary": "Put Creation Request",
+                "description": "Request user creation (or registration) process. The `req_id` should be in format \"\\<verification_kind\\>:\\<verification_identity\\>\".\n\nSupported verification kind(s):\n- `email`: the identity should be the email address\n\nPossible Restful errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised. (HTTP 400)\n- `bot`: You are being detected as a bot. (HTTP 403)\n- `hcaptcharequired`: This endpoint requires hcaptcha verification. (HTTP 403)",
+                "operationId": "put_creation_request_users_creation_requests__req_id__put",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Req Id",
+                            "type": "string"
+                        },
+                        "name": "req_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_put_creation_request_users_creation_requests__req_id__put"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreationRequestCreated"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/creation_requests/{req_id}/~request-verify": {
+            "post": {
+                "tags": [
+                    "users",
+                    "creation requests"
+                ],
+                "summary": "Request Creation Verification",
+                "description": "Request verification for a creation request. The actual behaviour depends on the verification kind defined in identity.\nThe return is expected to have two states: Requested or InitFailed.\n\nPossible errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised.\n\nInitFailed possible reasons:\n- General:\n    - `unsupported`: the server is not configured to support this method.\n    - `not-required`: this method doesn't need this step.\n- For `email` kind:\n    - `throttled`: your request is being throttled.",
+                "operationId": "request_creation_verification_users_creation_requests__req_id___request_verify_post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Req Id",
+                            "type": "string"
+                        },
+                        "name": "req_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Request Creation Verification Users Creation Requests  Req Id   Request Verify Post",
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/VerificationRequested"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/VerificationInitFailed"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/creation_requests/{req_id}/~resolve": {
+            "post": {
+                "tags": [
+                    "users",
+                    "creation requests"
+                ],
+                "summary": "Resolve Creation Request",
+                "description": "Try to resolve the creation request.\n\nPossible errors:\n- `notfound(req_id)`\n- `exists(username)`",
+                "operationId": "resolve_creation_request_users_creation_requests__req_id___resolve_post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Req Id",
+                            "type": "string"
+                        },
+                        "name": "req_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreationRequestFinal"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Resolve Creation Request Users Creation Requests  Req Id   Resolve Post",
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/CreationRequestResolved"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/CreationRequestUnresolved"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/creation_requests/{req_id}/~check-challenge": {
+            "post": {
+                "tags": [
+                    "users",
+                    "creation requests"
+                ],
+                "summary": "Check Challenge",
+                "description": "Check if the challenge can be completed by the code.\n\nPossible errors:\n- `notfound(req_id)`",
+                "operationId": "check_challenge_users_creation_requests__req_id___check_challenge_post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Req Id",
+                            "type": "string"
+                        },
+                        "name": "req_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChallengeCheck"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChallengeAnswer"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userid}/~change-password": {
+            "post": {
+                "tags": [
+                    "users",
+                    "user information"
+                ],
+                "summary": "Change Password",
+                "description": "Change password for a user. A user can change it's password.\nRequires scope: `user.change_password`.\n\nPossible errors:\n- `unauthorised`\n- `scopenotcovered`",
+                "operationId": "change_password_users__userid___change_password_post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Userid",
+                            "type": "integer"
+                        },
+                        "name": "userid",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PasswordChangeRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/access-tokens/~revoke": {
+            "post": {
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Revoke Session",
+                "description": "Revoke a session by the access token or the refresh token.\n`token_type` is the type of `token`, should be one of:\n- `access_token`\n- `refresh_token`\n\nIf revoking by a refresh token, this request must be:\n- authorized by the session itself.\n- authorized as another session with scope `session.revoke_other`, which have been created at least 24 hours.\n\nPossible RPC errors:\n- `conditionrequires(token_type,token,created_at)`\n- `badformat(token_type)`\n- `notfound(token_type,token)`",
+                "operationId": "revoke_session_access_tokens__revoke_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RevokingAccessTokenRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RevokingCompleted"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response 400 Revoke Session Access Tokens  Revoke Post",
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/RevokingRequiresAge"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/APIResErrBase"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/access-tokens/specific/{ref_tok}": {
+            "get": {
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Get Access Token By Refresh Token",
+                "description": "Get an access token object by refresh token. Requires `session.list` scope.\n\nRefresh tokens can be used to refresh expired time without granting access to account,\nalso act as unique identity to access token.\n\nAccess token itself should remain as secret and keep on the device.\n\nPossible errors:\n- `notfound(ref_tok)`",
+                "operationId": "get_access_token_by_refresh_token_access_tokens_specific__ref_tok__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Ref Tok",
+                            "type": "string"
+                        },
+                        "name": "ref_tok",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessTokenResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/access-tokens/~create-by-password": {
+            "post": {
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Create Access Token By Password",
+                "description": "Create a new access token by password.\n\nIf `user_agent_id` is not null, this endpoint will try to return a recent access token matches `user_agent_id`.\n\n`user_agent_id` and `user_agent` will be applied to new access token if creating is required.\n\nPossible RPC errors:\n- `notfound(username,password)`\n- `conditionrequires(scope)`",
+                "operationId": "create_access_token_by_password_access_tokens__create_by_password_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PasswordAccessTokenCreating"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessTokenCreated"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/access-tokens/~create": {
+            "post": {
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Create Access Token",
+                "description": "Create another access token. Requires scope `user.create_session`.\n\nPossible RPC errors:\n- `conditionrequires(scope,access_token.scope)`\n- `notfound(clientid)`\n- `notfound(auth_code)`: the authorization code is not found or is expired.",
+                "operationId": "create_access_token_access_tokens__create_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SessionAccessTokenCreating"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessTokenCreated"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/access-tokens/specific/{ref_tok}/~refresh": {
+            "post": {
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Update Token Expiring Time",
+                "description": "Update expired_at to `target`. If `target` is smaller than the current value, success with doing nothing.\nIf `target` is not within 52 weeks of now, set to 52 weeks. The time accuracy only is seconds level.\n\nPossible RESTful errors:\n- `notfound(ref_tok)`, 404",
+                "operationId": "update_token_expiring_time_access_tokens_specific__ref_tok___refresh_post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Ref Tok",
+                            "type": "string"
+                        },
+                        "name": "ref_tok",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTokenExpiringTime"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenUpdated"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/oauth2/~authorize": {
+            "get": {
+                "tags": [
+                    "oauth2"
+                ],
+                "summary": "Oauth2 Authorize",
+                "description": "Start OAuth 2 authorization process.\n\n`ua_id` is the user agent identity, a string can be hopefully unique to other user agent.\nLightStands APIs will try to assign same session for same user agent identity,\nwhich can help to aganist some browsers that frequently removes the local storages.\n\nOAuth 2 PKCE extension is required for LightStands OAuth 2 process.\n\nMax lengths:\n- `state`: 512 bytes\n- `ua_id`: 256 bytes\n- `code_challenge`: 64 bytes",
+                "operationId": "oauth2_authorize_oauth2__authorize_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Response Type",
+                            "type": "string"
+                        },
+                        "name": "response_type",
+                        "in": "query"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Client Id",
+                            "type": "string"
+                        },
+                        "name": "client_id",
+                        "in": "query"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Redirect Uri",
+                            "type": "string"
+                        },
+                        "name": "redirect_uri",
+                        "in": "query"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Scope",
+                            "type": "string"
+                        },
+                        "name": "scope",
+                        "in": "query"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Code Challenge",
+                            "type": "string"
+                        },
+                        "name": "code_challenge",
+                        "in": "query"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Code Challenge Method",
+                            "type": "string"
+                        },
+                        "name": "code_challenge_method",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "State",
+                            "type": "string"
+                        },
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Ua Id",
+                            "type": "string"
+                        },
+                        "name": "ua_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Successful Response",
+                        "headers": {
+                            "Location": {
+                                "description": "Redirecting location",
+                                "schema": {
+                                    "type": "url"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/oauth2/~complete": {
+            "get": {
+                "tags": [
+                    "oauth2"
+                ],
+                "summary": "Oauth2 Complete Process",
+                "description": "Complete OAuth 2 process, jump to the application.\nThis endpoint is called by LightStands web application, third-party applications should not use it.",
+                "operationId": "oauth2_complete_process_oauth2__complete_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Auth Code",
+                            "type": "string"
+                        },
+                        "name": "auth_code",
+                        "in": "query"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Redirect Uri",
+                            "type": "string"
+                        },
+                        "name": "redirect_uri",
+                        "in": "query"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Confirmed",
+                            "type": "boolean"
+                        },
+                        "name": "confirmed",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Successful Response",
+                        "headers": {
+                            "Location": {
+                                "description": "Redirecting location",
+                                "schema": {
+                                    "type": "url"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/oauth2/~token": {
+            "post": {
+                "tags": [
+                    "oauth2"
+                ],
+                "summary": "Oauth2 Exchange Access Token",
+                "description": "Exchange authorization code for access token.\n\n`client_secret` is required when the application have `client_secret`, otherwise the field will be ignored.",
+                "operationId": "oauth2_exchange_access_token_oauth2__token_post",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_oauth2_exchange_access_token_oauth2__token_post"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizationCodeResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuth2ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuth2ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "APIResErrBase": {
+                "title": "APIResErrBase",
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "errors": {
+                        "title": "Errors",
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "example": {
+                    "ok": false,
+                    "errors": {
+                        "badformat(any_name)": "any_name should be in format \"any\\_<name>\""
+                    }
+                }
+            },
+            "AccessTokenCreated": {
+                "title": "AccessTokenCreated",
+                "required": [
+                    "access_token"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "access_token": {
+                        "$ref": "#/components/schemas/UserPrivateAccessToken"
+                    }
+                }
+            },
+            "AccessTokenResult": {
+                "title": "AccessTokenResult",
+                "required": [
+                    "access_token"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "access_token": {
+                        "$ref": "#/components/schemas/UserPrivateAccessTokenWithoutToken"
+                    }
+                }
+            },
+            "AuthorizationCodeResponse": {
+                "title": "AuthorizationCodeResponse",
+                "required": [
+                    "access_token",
+                    "token_type",
+                    "expires_in",
+                    "refresh_token",
+                    "scope"
+                ],
+                "type": "object",
+                "properties": {
+                    "access_token": {
+                        "title": "Access Token",
+                        "type": "string"
+                    },
+                    "token_type": {
+                        "title": "Token Type",
+                        "type": "string"
+                    },
+                    "expires_in": {
+                        "title": "Expires In",
+                        "type": "integer"
+                    },
+                    "refresh_token": {
+                        "title": "Refresh Token",
+                        "type": "string"
+                    },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string"
+                    }
+                }
+            },
+            "Body_oauth2_exchange_access_token_oauth2__token_post": {
+                "title": "Body_oauth2_exchange_access_token_oauth2__token_post",
+                "required": [
+                    "grant_type",
+                    "code",
+                    "redirect_uri",
+                    "client_id",
+                    "code_verifier"
+                ],
+                "type": "object",
+                "properties": {
+                    "grant_type": {
+                        "title": "Grant Type",
+                        "type": "string"
+                    },
+                    "code": {
+                        "title": "Code",
+                        "type": "string"
+                    },
+                    "redirect_uri": {
+                        "title": "Redirect Uri",
+                        "type": "string"
+                    },
+                    "client_id": {
+                        "title": "Client Id",
+                        "type": "string"
+                    },
+                    "client_secret": {
+                        "title": "Client Secret",
+                        "type": "string"
+                    },
+                    "code_verifier": {
+                        "title": "Code Verifier",
+                        "type": "string"
+                    }
+                }
+            },
+            "Body_put_creation_request_users_creation_requests__req_id__put": {
+                "title": "Body_put_creation_request_users_creation_requests__req_id__put",
+                "type": "object",
+                "properties": {
+                    "h-captcha-response": {
+                        "title": "H-Captcha-Response",
+                        "type": "string"
+                    }
+                }
+            },
+            "ChallengeAnswer": {
+                "title": "ChallengeAnswer",
+                "required": [
+                    "ok",
+                    "challenge"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean"
+                    },
+                    "challenge": {
+                        "title": "Challenge",
+                        "type": "string"
+                    }
+                }
+            },
+            "ChallengeCheck": {
+                "title": "ChallengeCheck",
+                "required": [
+                    "challenge"
+                ],
+                "type": "object",
+                "properties": {
+                    "challenge": {
+                        "title": "Challenge",
+                        "type": "string"
+                    }
+                }
+            },
+            "CreationRequestCreated": {
+                "title": "CreationRequestCreated",
+                "required": [
+                    "creation_request"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "creation_request": {
+                        "$ref": "#/components/schemas/UserPrivateCreationRequest"
+                    }
+                }
+            },
+            "CreationRequestFinal": {
+                "title": "CreationRequestFinal",
+                "required": [
+                    "username",
+                    "challenge"
+                ],
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "title": "Username",
+                        "maxLength": 24,
+                        "minLength": 5,
+                        "type": "string"
+                    },
+                    "challenge": {
+                        "title": "Challenge",
+                        "type": "string"
+                    }
+                }
+            },
+            "CreationRequestResolved": {
+                "title": "CreationRequestResolved",
+                "required": [
+                    "creation_request",
+                    "user",
+                    "access_token",
+                    "challenge"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "creation_request": {
+                        "$ref": "#/components/schemas/UserPrivateCreationRequest"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserPrivateUser"
+                    },
+                    "access_token": {
+                        "$ref": "#/components/schemas/UserPrivateAccessToken"
+                    },
+                    "challenge": {
+                        "title": "Challenge",
+                        "type": "string"
+                    }
+                }
+            },
+            "CreationRequestUnresolved": {
+                "title": "CreationRequestUnresolved",
+                "required": [
+                    "creation_request",
+                    "challenge"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "creation_request": {
+                        "$ref": "#/components/schemas/UserPrivateCreationRequest"
+                    },
+                    "challenge": {
+                        "title": "Challenge",
+                        "type": "string"
+                    }
+                }
+            },
+            "DateTime": {
+                "title": "DateTime",
+                "type": "object",
+                "properties": {
+                    "timezone_offset_hour": {
+                        "title": "Timezone Offset Hour",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "timezone_offset_second": {
+                        "title": "Timezone Offset Second",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "year": {
+                        "title": "Year",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "month": {
+                        "title": "Month",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "day": {
+                        "title": "Day",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "hour": {
+                        "title": "Hour",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "minute": {
+                        "title": "Minute",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "second": {
+                        "title": "Second",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "microsecond": {
+                        "title": "Microsecond",
+                        "type": "integer",
+                        "default": 0
+                    }
+                }
+            },
+            "HTTPValidationError": {
+                "title": "HTTPValidationError",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            },
+            "OAuth2ErrorResponse": {
+                "title": "OAuth2ErrorResponse",
+                "required": [
+                    "error",
+                    "error_description"
+                ],
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "title": "Error",
+                        "type": "string"
+                    },
+                    "error_description": {
+                        "title": "Error Description",
+                        "type": "string"
+                    },
+                    "error_uri": {
+                        "title": "Error Uri",
+                        "type": "string"
+                    },
+                    "state": {
+                        "title": "State",
+                        "type": "string"
+                    }
+                }
+            },
+            "PasswordAccessTokenCreating": {
+                "title": "PasswordAccessTokenCreating",
+                "required": [
+                    "clientid",
+                    "scope",
+                    "username",
+                    "password"
+                ],
+                "type": "object",
+                "properties": {
+                    "clientid": {
+                        "title": "Clientid",
+                        "type": "string"
+                    },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string"
+                    },
+                    "user_agent_id": {
+                        "title": "User Agent Id",
+                        "type": "string"
+                    },
+                    "user_agent": {
+                        "$ref": "#/components/schemas/UserAgent"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
+                    },
+                    "password": {
+                        "title": "Password",
+                        "type": "string"
+                    }
+                }
+            },
+            "PasswordChangeRequest": {
+                "title": "PasswordChangeRequest",
+                "type": "object",
+                "properties": {
+                    "new_password": {
+                        "title": "New Password",
+                        "type": "string"
+                    }
+                }
+            },
+            "RevokingAccessTokenRequest": {
+                "title": "RevokingAccessTokenRequest",
+                "required": [
+                    "token_type",
+                    "token"
+                ],
+                "type": "object",
+                "properties": {
+                    "token_type": {
+                        "title": "Token Type",
+                        "anyOf": [
+                            {
+                                "enum": [
+                                    "access_token"
+                                ],
+                                "type": "string"
+                            },
+                            {
+                                "enum": [
+                                    "refresh_token"
+                                ],
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "token": {
+                        "title": "Token",
+                        "type": "string"
+                    }
+                }
+            },
+            "RevokingCompleted": {
+                "title": "RevokingCompleted",
+                "required": [
+                    "access_token"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "access_token": {
+                        "$ref": "#/components/schemas/UserPrivateAccessTokenWithoutToken"
+                    }
+                }
+            },
+            "RevokingRequiresAge": {
+                "title": "RevokingRequiresAge",
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "errors": {
+                        "title": "Errors",
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "default": {
+                            "conditionrequires(token_type,token,created_at)": "revoking the another token by the refresh token requires a session ages 24 hours at least."
+                        }
+                    }
+                },
+                "example": {
+                    "ok": false,
+                    "errors": {
+                        "conditionrequires(token_type,token,created_at)": "revoking the another token by the refresh token requires a session ages 24 hours at least."
+                    }
+                }
+            },
+            "ServerLoadCapture": {
+                "title": "ServerLoadCapture",
+                "required": [
+                    "loader_in_queue",
+                    "loader_throttle_remaining"
+                ],
+                "type": "object",
+                "properties": {
+                    "loader_in_queue": {
+                        "title": "Loader In Queue",
+                        "type": "integer"
+                    },
+                    "loader_throttle_remaining": {
+                        "title": "Loader Throttle Remaining",
+                        "type": "integer"
+                    }
+                }
+            },
+            "ServerPublicSettings": {
+                "title": "ServerPublicSettings",
+                "required": [
+                    "api_layer_version"
+                ],
+                "type": "object",
+                "properties": {
+                    "api_layer_version": {
+                        "title": "Api Layer Version",
+                        "type": "integer"
+                    },
+                    "hcaptcha_site_key": {
+                        "title": "Hcaptcha Site Key",
+                        "type": "string"
+                    }
+                }
+            },
+            "SessionAccessTokenCreating": {
+                "title": "SessionAccessTokenCreating",
+                "required": [
+                    "clientid",
+                    "scope"
+                ],
+                "type": "object",
+                "properties": {
+                    "clientid": {
+                        "title": "Clientid",
+                        "type": "string"
+                    },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string"
+                    },
+                    "user_agent_id": {
+                        "title": "User Agent Id",
+                        "type": "string"
+                    },
+                    "user_agent": {
+                        "$ref": "#/components/schemas/UserAgent"
+                    },
+                    "auth_code": {
+                        "title": "Auth Code",
+                        "type": "string"
+                    }
+                }
+            },
+            "TokenUpdated": {
+                "title": "TokenUpdated",
+                "required": [
+                    "access_token"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "access_token": {
+                        "$ref": "#/components/schemas/UserPrivateAccessTokenWithoutToken"
+                    }
+                }
+            },
+            "UpdateTokenExpiringTime": {
+                "title": "UpdateTokenExpiringTime",
+                "required": [
+                    "target"
+                ],
+                "type": "object",
+                "properties": {
+                    "target": {
+                        "$ref": "#/components/schemas/DateTime"
+                    }
+                }
+            },
+            "UserAgent": {
+                "title": "UserAgent",
+                "type": "object",
+                "properties": {
+                    "p": {
+                        "title": "P",
+                        "maxLength": 24,
+                        "type": "string"
+                    },
+                    "dev": {
+                        "title": "Dev",
+                        "maxLength": 64,
+                        "type": "string"
+                    }
+                }
+            },
+            "UserPrivateAccessToken": {
+                "title": "UserPrivateAccessToken",
+                "required": [
+                    "userid",
+                    "refresh_token",
+                    "expired_at",
+                    "created_at",
+                    "active",
+                    "scope",
+                    "updated_at",
+                    "token"
+                ],
+                "type": "object",
+                "properties": {
+                    "userid": {
+                        "title": "Userid",
+                        "type": "integer"
+                    },
+                    "refresh_token": {
+                        "title": "Refresh Token",
+                        "type": "string"
+                    },
+                    "expired_at": {
+                        "title": "Expired At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "active": {
+                        "title": "Active",
+                        "type": "boolean"
+                    },
+                    "appid": {
+                        "title": "Appid",
+                        "type": "integer"
+                    },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "title": "Updated At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "user_agent": {
+                        "$ref": "#/components/schemas/UserAgent"
+                    },
+                    "token": {
+                        "title": "Token",
+                        "type": "string"
+                    }
+                }
+            },
+            "UserPrivateAccessTokenWithoutToken": {
+                "title": "UserPrivateAccessTokenWithoutToken",
+                "required": [
+                    "userid",
+                    "refresh_token",
+                    "expired_at",
+                    "created_at",
+                    "active",
+                    "scope",
+                    "updated_at"
+                ],
+                "type": "object",
+                "properties": {
+                    "userid": {
+                        "title": "Userid",
+                        "type": "integer"
+                    },
+                    "refresh_token": {
+                        "title": "Refresh Token",
+                        "type": "string"
+                    },
+                    "expired_at": {
+                        "title": "Expired At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "active": {
+                        "title": "Active",
+                        "type": "boolean"
+                    },
+                    "appid": {
+                        "title": "Appid",
+                        "type": "integer"
+                    },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "title": "Updated At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "user_agent": {
+                        "$ref": "#/components/schemas/UserAgent"
+                    }
+                }
+            },
+            "UserPrivateCreationRequest": {
+                "title": "UserPrivateCreationRequest",
+                "required": [
+                    "identifier",
+                    "challenge_failed_counter",
+                    "created_at",
+                    "request_verification_counter",
+                    "resolved"
+                ],
+                "type": "object",
+                "properties": {
+                    "identifier": {
+                        "title": "Identifier",
+                        "type": "string"
+                    },
+                    "challenge_failed_counter": {
+                        "title": "Challenge Failed Counter",
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "request_verification_at": {
+                        "title": "Request Verification At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "request_verification_counter": {
+                        "title": "Request Verification Counter",
+                        "type": "integer"
+                    },
+                    "resolved": {
+                        "title": "Resolved",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "UserPrivateUser": {
+                "title": "UserPrivateUser",
+                "required": [
+                    "userid",
+                    "username",
+                    "created_at"
+                ],
+                "type": "object",
+                "properties": {
+                    "userid": {
+                        "title": "Userid",
+                        "type": "integer"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "loc": {
+                        "title": "Location",
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        }
+                    },
+                    "msg": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    }
+                }
+            },
+            "VerificationInitFailed": {
+                "title": "VerificationInitFailed",
+                "required": [
+                    "creation_request",
+                    "reason"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "creation_request": {
+                        "$ref": "#/components/schemas/UserPrivateCreationRequest"
+                    },
+                    "reason": {
+                        "title": "Reason",
+                        "type": "string"
+                    }
+                }
+            },
+            "VerificationRequested": {
+                "title": "VerificationRequested",
+                "required": [
+                    "creation_request"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "creation_request": {
+                        "$ref": "#/components/schemas/UserPrivateCreationRequest"
+                    }
+                }
+            }
+        }
+    }
+}
