@@ -87,12 +87,13 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "application/x-www-form-urlencoded": {
+                        "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/Body_put_creation_request_users_creation_requests__req_id__put"
+                                "$ref": "#/components/schemas/CreationRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -410,7 +411,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
             }
         },
         "/access-tokens/~revoke": {
@@ -470,7 +476,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
             }
         },
         "/access-tokens/specific/{ref_tok}": {
@@ -523,7 +534,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
             }
         },
         "/access-tokens/~create-by-password": {
@@ -627,7 +643,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
             }
         },
         "/access-tokens/specific/{ref_tok}/~refresh": {
@@ -689,7 +710,7 @@
                     "oauth2"
                 ],
                 "summary": "Oauth2 Authorize",
-                "description": "Start OAuth 2 authorization process.\n\n`ua_id` is the user agent identity, a string can be hopefully unique to other user agent.\nLightStands APIs will try to assign same session for same user agent identity,\nwhich can help to aganist some browsers that frequently removes the local storages.\n\nOAuth 2 PKCE extension is required for LightStands OAuth 2 process.\n\nMax lengths:\n- `state`: 512 bytes\n- `ua_id`: 256 bytes\n- `code_challenge`: 64 bytes",
+                "description": "Start OAuth 2 authorization process.\n\n`ua_id` is the user agent identity, a string can be hopefully unique to other user agent.\nLightStands APIs will try to assign same session for same user agent identity,\nwhich can help to aganist some browsers that frequently removes the local storages.\n\nOAuth 2 PKCE extension is required for LightStands OAuth 2 process.\n\nThis endpoint will redirect the user to LightStands' web application to complete authorization.\n\nMax lengths:\n- `state`: 512 bytes\n- `ua_id`: 256 bytes\n- `code_challenge`: 64 bytes",
                 "operationId": "oauth2_authorize_oauth2__authorize_get",
                 "parameters": [
                     {
@@ -762,68 +783,6 @@
                             "type": "string"
                         },
                         "name": "ua_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "302": {
-                        "description": "Successful Response",
-                        "headers": {
-                            "Location": {
-                                "description": "Redirecting location",
-                                "schema": {
-                                    "type": "url"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/oauth2/~complete": {
-            "get": {
-                "tags": [
-                    "oauth2"
-                ],
-                "summary": "Oauth2 Complete Process",
-                "description": "Complete OAuth 2 process, jump to the application.\nThis endpoint is called by LightStands web application, third-party applications should not use it.",
-                "operationId": "oauth2_complete_process_oauth2__complete_get",
-                "parameters": [
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Auth Code",
-                            "type": "string"
-                        },
-                        "name": "auth_code",
-                        "in": "query"
-                    },
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Redirect Uri",
-                            "type": "string"
-                        },
-                        "name": "redirect_uri",
-                        "in": "query"
-                    },
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Confirmed",
-                            "type": "boolean"
-                        },
-                        "name": "confirmed",
                         "in": "query"
                     }
                 ],
@@ -1045,16 +1004,6 @@
                     }
                 }
             },
-            "Body_put_creation_request_users_creation_requests__req_id__put": {
-                "title": "Body_put_creation_request_users_creation_requests__req_id__put",
-                "type": "object",
-                "properties": {
-                    "h-captcha-response": {
-                        "title": "H-Captcha-Response",
-                        "type": "string"
-                    }
-                }
-            },
             "ChallengeAnswer": {
                 "title": "ChallengeAnswer",
                 "required": [
@@ -1082,6 +1031,16 @@
                 "properties": {
                     "challenge": {
                         "title": "Challenge",
+                        "type": "string"
+                    }
+                }
+            },
+            "CreationRequest": {
+                "title": "CreationRequest",
+                "type": "object",
+                "properties": {
+                    "h_captcha_response": {
+                        "title": "H Captcha Response",
                         "type": "string"
                     }
                 }
@@ -1741,6 +1700,18 @@
                     },
                     "creation_request": {
                         "$ref": "#/components/schemas/UserPrivateCreationRequest"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "OAuth2AuthorizationCodeBearer": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "scopes": {},
+                        "authorizationUrl": "/oauth2/~authorize",
+                        "tokenUrl": "/oauth2/~token"
                     }
                 }
             }
