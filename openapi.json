@@ -600,7 +600,7 @@
                     "sessions"
                 ],
                 "summary": "Create Access Token",
-                "description": "Create another access token. Requires scope `user.create_session`.\n\nPossible RPC errors:\n- `conditionrequires(scope,access_token.scope)`\n- `notfound(clientid)`\n- `notfound(auth_code)`: the authorization code is not found or is expired.",
+                "description": "Create another access token. Requires scope `user.create_session`.\n\nPossible RPC errors:\n- `conditionrequires(scope,access_token.scope)`\n- `notfound(client_id)`\n- `notfound(auth_code)`: the authorization code is not found or is expired.",
                 "operationId": "create_access_token_access_tokens__create_post",
                 "requestBody": {
                     "content": {
@@ -872,10 +872,129 @@
                     }
                 }
             }
+        },
+        "/apps/by-client-id/{client_id}": {
+            "get": {
+                "tags": [
+                    "applications"
+                ],
+                "summary": "Get App By Client Id",
+                "description": "Get application information by client identity.",
+                "operationId": "get_app_by_client_id_apps_by_client_id__client_id__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Client Id",
+                            "type": "string"
+                        },
+                        "name": "client_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicApplication"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/apps/by-id/{appid}": {
+            "get": {
+                "tags": [
+                    "applications"
+                ],
+                "summary": "Get App By Appid",
+                "description": "Get application information by application id.",
+                "operationId": "get_app_by_appid_apps_by_id__appid__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Appid",
+                            "type": "integer"
+                        },
+                        "name": "appid",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicApplication"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
+            "APIResBase": {
+                "title": "APIResBase",
+                "required": [
+                    "ok"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean"
+                    }
+                }
+            },
             "APIResErrBase": {
                 "title": "APIResErrBase",
                 "type": "object",
@@ -1227,15 +1346,15 @@
             "PasswordAccessTokenCreating": {
                 "title": "PasswordAccessTokenCreating",
                 "required": [
-                    "clientid",
+                    "client_id",
                     "scope",
                     "username",
                     "password"
                 ],
                 "type": "object",
                 "properties": {
-                    "clientid": {
-                        "title": "Clientid",
+                    "client_id": {
+                        "title": "Client Id",
                         "type": "string"
                     },
                     "scope": {
@@ -1266,6 +1385,57 @@
                     "new_password": {
                         "title": "New Password",
                         "type": "string"
+                    }
+                }
+            },
+            "PublicApplication": {
+                "title": "PublicApplication",
+                "required": [
+                    "appid",
+                    "name",
+                    "client_id",
+                    "scope",
+                    "created_at",
+                    "updated_at"
+                ],
+                "type": "object",
+                "properties": {
+                    "appid": {
+                        "title": "Appid",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "owner_id": {
+                        "title": "Owner Id",
+                        "type": "integer"
+                    },
+                    "client_id": {
+                        "title": "Client Id",
+                        "type": "string"
+                    },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string"
+                    },
+                    "redirect_uri": {
+                        "title": "Redirect Uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "title": "Updated At",
+                        "type": "string",
+                        "format": "date-time"
                     }
                 }
             },
@@ -1382,13 +1552,13 @@
             "SessionAccessTokenCreating": {
                 "title": "SessionAccessTokenCreating",
                 "required": [
-                    "clientid",
+                    "client_id",
                     "scope"
                 ],
                 "type": "object",
                 "properties": {
-                    "clientid": {
-                        "title": "Clientid",
+                    "client_id": {
+                        "title": "Client Id",
                         "type": "string"
                     },
                     "scope": {
