@@ -65,288 +65,6 @@
                 "deprecated": true
             }
         },
-        "/users/creation_requests/{req_id}": {
-            "put": {
-                "tags": [
-                    "users",
-                    "creation requests"
-                ],
-                "summary": "Put Creation Request",
-                "description": "Request user creation (or registration) process. The `req_id` should be in format \"\\<verification_kind\\>:\\<verification_identity\\>\".\n\nSupported verification kind(s):\n- `email`: the identity should be the email address\n\nPossible Restful errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised. (HTTP 400)\n- `bot`: You are being detected as a bot. (HTTP 403)\n- `hcaptcharequired`: This endpoint requires hcaptcha verification. (HTTP 403)",
-                "operationId": "put_creation_request_users_creation_requests__req_id__put",
-                "parameters": [
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Req Id",
-                            "type": "string"
-                        },
-                        "name": "req_id",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreationRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CreationRequestCreated"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/APIResErrBase"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/APIResErrBase"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users/creation_requests/{req_id}/~request-verify": {
-            "post": {
-                "tags": [
-                    "users",
-                    "creation requests"
-                ],
-                "summary": "Request Creation Verification",
-                "description": "Request verification for a creation request. The actual behaviour depends on the verification kind defined in identity.\nThe return is expected to have two states: Requested or InitFailed.\n\nPossible errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised.\n\nInitFailed possible reasons:\n- General:\n    - `unsupported`: the server is not configured to support this method.\n    - `not-required`: this method doesn't need this step.\n- For `email` kind:\n    - `throttled`: your request is being throttled.",
-                "operationId": "request_creation_verification_users_creation_requests__req_id___request_verify_post",
-                "parameters": [
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Req Id",
-                            "type": "string"
-                        },
-                        "name": "req_id",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "title": "Response Request Creation Verification Users Creation Requests  Req Id   Request Verify Post",
-                                    "anyOf": [
-                                        {
-                                            "$ref": "#/components/schemas/VerificationRequested"
-                                        },
-                                        {
-                                            "$ref": "#/components/schemas/VerificationInitFailed"
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/APIResErrBase"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users/creation_requests/{req_id}/~resolve": {
-            "post": {
-                "tags": [
-                    "users",
-                    "creation requests"
-                ],
-                "summary": "Resolve Creation Request",
-                "description": "Try to resolve the creation request.\n\nPossible errors:\n- `notfound(req_id)`\n- `exists(username)`",
-                "operationId": "resolve_creation_request_users_creation_requests__req_id___resolve_post",
-                "parameters": [
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Req Id",
-                            "type": "string"
-                        },
-                        "name": "req_id",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreationRequestFinal"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "title": "Response Resolve Creation Request Users Creation Requests  Req Id   Resolve Post",
-                                    "anyOf": [
-                                        {
-                                            "$ref": "#/components/schemas/CreationRequestResolved"
-                                        },
-                                        {
-                                            "$ref": "#/components/schemas/CreationRequestUnresolved"
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/APIResErrBase"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/APIResErrBase"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users/creation_requests/{req_id}/~check-challenge": {
-            "post": {
-                "tags": [
-                    "users",
-                    "creation requests"
-                ],
-                "summary": "Check Challenge",
-                "description": "Check if the challenge can be completed by the code.\n\nPossible errors:\n- `notfound(req_id)`",
-                "operationId": "check_challenge_users_creation_requests__req_id___check_challenge_post",
-                "parameters": [
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Req Id",
-                            "type": "string"
-                        },
-                        "name": "req_id",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ChallengeCheck"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ChallengeAnswer"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/APIResErrBase"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/users/{userid}/~change-password": {
             "post": {
                 "tags": [
@@ -962,6 +680,284 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/APIResBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/creation_requests/{req_id}": {
+            "put": {
+                "tags": [
+                    "creation requests"
+                ],
+                "summary": "Put Creation Request",
+                "description": "Request user creation (or registration) process. The `req_id` should be in format \"\\<verification_kind\\>:\\<verification_identity\\>\".\n\nSupported verification kind(s):\n- `email`: the identity should be the email address\n\nPossible Restful errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised. (HTTP 400)\n- `bot`: You are being detected as a bot. (HTTP 403)\n- `hcaptcharequired`: This endpoint requires hcaptcha verification. (HTTP 403)",
+                "operationId": "put_creation_request_creation_requests__req_id__put",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Req Id",
+                            "type": "string"
+                        },
+                        "name": "req_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreationRequestCreated"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/creation_requests/{req_id}/~request-verify": {
+            "post": {
+                "tags": [
+                    "creation requests"
+                ],
+                "summary": "Request Creation Verification",
+                "description": "Request verification for a creation request. The actual behaviour depends on the verification kind defined in identity.\nThe return is expected to have two states: Requested or InitFailed.\n\nPossible errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised.\n\nInitFailed possible reasons:\n- General:\n    - `unsupported`: the server is not configured to support this method.\n    - `not-required`: this method doesn't need this step.\n- For `email` kind:\n    - `throttled`: your request is being throttled.",
+                "operationId": "request_creation_verification_creation_requests__req_id___request_verify_post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Req Id",
+                            "type": "string"
+                        },
+                        "name": "req_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Request Creation Verification Creation Requests  Req Id   Request Verify Post",
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/VerificationRequested"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/VerificationInitFailed"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/creation_requests/{req_id}/~resolve": {
+            "post": {
+                "tags": [
+                    "creation requests"
+                ],
+                "summary": "Resolve Creation Request",
+                "description": "Try to resolve the creation request.\n\nPossible errors:\n- `notfound(req_id)`\n- `exists(username)`",
+                "operationId": "resolve_creation_request_creation_requests__req_id___resolve_post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Req Id",
+                            "type": "string"
+                        },
+                        "name": "req_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreationRequestFinal"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Resolve Creation Request Creation Requests  Req Id   Resolve Post",
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/CreationRequestResolved"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/CreationRequestUnresolved"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/creation_requests/{req_id}/~check-challenge": {
+            "post": {
+                "tags": [
+                    "creation requests"
+                ],
+                "summary": "Check Challenge",
+                "description": "Check if the challenge can be completed by the code.\n\nPossible errors:\n- `notfound(req_id)`",
+                "operationId": "check_challenge_creation_requests__req_id___check_challenge_post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Req Id",
+                            "type": "string"
+                        },
+                        "name": "req_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChallengeCheck"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChallengeAnswer"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
                                 }
                             }
                         }
