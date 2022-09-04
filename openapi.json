@@ -354,7 +354,7 @@
                     "user information"
                 ],
                 "summary": "Change Password",
-                "description": "Change password for a user. A user can change it's password.\nRequires scope: `user.change_password`.\n\nPossible errors:\n- `unauthorised`\n- `scopenotcovered`",
+                "description": "Change password for a user. A user can change it's password.\nRequires scope: `user.change_password`.\n\nPossible errors:\n- `unauthorised`\n- `scopenotcovered(user.change_password)`",
                 "operationId": "change_password_users__userid___change_password_post",
                 "parameters": [
                     {
@@ -548,7 +548,7 @@
                     "sessions"
                 ],
                 "summary": "Create Access Token By Password",
-                "description": "Create a new access token by password.\n\nIf `user_agent_id` is not null, this endpoint will try to return a recent access token matches `user_agent_id`.\n\n`user_agent_id` and `user_agent` will be applied to new access token if creating is required.\n\nPossible RPC errors:\n- `notfound(username,password)`\n- `conditionrequires(scope)`",
+                "description": "Create a new access token by password.\n\nIf `user_agent_id` is not null, this endpoint will try to return a recent\naccess token matches `user_agent_id`. Old scope will be reset and new\nscope will be applied.\n\n`user_agent_id` and `user_agent` will be applied to new access token if\ncreating is required.\n\nPossible RPC errors:\n- `notfound(username,password)`",
                 "operationId": "create_access_token_by_password_access_tokens__create_by_password_post",
                 "requestBody": {
                     "content": {
@@ -1879,7 +1879,12 @@
                 "type": "oauth2",
                 "flows": {
                     "authorizationCode": {
-                        "scopes": {},
+                        "scopes": {
+                            "user.change_password": "Change user password",
+                            "user.create_session": "Create new session",
+                            "session.list": "List existing sessions",
+                            "session.revoke_other": "Revoke other sessions"
+                        },
                         "authorizationUrl": "/oauth2/~authorize",
                         "tokenUrl": "/oauth2/~token"
                     }
