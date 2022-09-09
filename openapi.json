@@ -68,8 +68,7 @@
         "/users/{userid}/~change-password": {
             "post": {
                 "tags": [
-                    "users",
-                    "user information"
+                    "users"
                 ],
                 "summary": "Change Password",
                 "description": "Change password for a user. A user can change it's password.\nRequires scope: `user.change_password`.\n\nPossible errors:\n- `unauthorised`\n- `scopenotcovered(user.change_password)`",
@@ -98,6 +97,137 @@
                 "responses": {
                     "204": {
                         "description": "Successful Response"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/users/{userid}/public": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get User Public Information",
+                "description": "Get user public information of `userid`. Including:\n\n- username\n\nPossible RESTful Errors:\n- `notfound(userid)`, `404`",
+                "operationId": "get_user_public_information_users__userid__public_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Userid",
+                            "type": "integer"
+                        },
+                        "name": "userid",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserPublicInformation"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userid}/private": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get User Private Information",
+                "description": "Get user public and private information of `userid`. Including:\n\n- username\n- email address\n\nPossible RESTful Errors:\n- `scopenotcovered(user.read)`, `403`\n- `notfound(userid)`, `404`",
+                "operationId": "get_user_private_information_users__userid__private_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Userid",
+                            "type": "integer"
+                        },
+                        "name": "userid",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserPrivateInformation"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthorized",
@@ -1769,6 +1899,28 @@
                     }
                 }
             },
+            "UserPrivateInformation": {
+                "title": "UserPrivateInformation",
+                "required": [
+                    "userid",
+                    "username"
+                ],
+                "type": "object",
+                "properties": {
+                    "userid": {
+                        "title": "Userid",
+                        "type": "integer"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "type": "string"
+                    }
+                }
+            },
             "UserPrivateUser": {
                 "title": "UserPrivateUser",
                 "required": [
@@ -1794,6 +1946,24 @@
                         "title": "Created At",
                         "type": "string",
                         "format": "date-time"
+                    }
+                }
+            },
+            "UserPublicInformation": {
+                "title": "UserPublicInformation",
+                "required": [
+                    "userid",
+                    "username"
+                ],
+                "type": "object",
+                "properties": {
+                    "userid": {
+                        "title": "Userid",
+                        "type": "integer"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
                     }
                 }
             },
