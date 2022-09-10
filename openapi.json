@@ -396,7 +396,7 @@
                     "sessions"
                 ],
                 "summary": "Create Access Token By Password",
-                "description": "Create a new access token by password.\n\nIf `user_agent_id` is not null, this endpoint will try to return a recent\naccess token matches `user_agent_id`. Old scope will be reset and new\nscope will be applied.\n\n`user_agent_id` and `user_agent` will be applied to new access token if\ncreating is required.\n\nPossible RPC errors:\n- `notfound(username,password)`",
+                "description": "Create a new access token by password.\n\nIf `user_agent_id` is not null, this endpoint will try to return a recent\naccess token matches `user_agent_id` if all fields match.\n\n`user_agent_id` and `user_agent` will be applied to new access token if\ncreating is required.\n\nPossible RPC errors:\n- `notfound(username,password)`",
                 "operationId": "create_access_token_by_password_access_tokens__create_by_password_post",
                 "requestBody": {
                     "content": {
