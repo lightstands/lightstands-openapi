@@ -42,29 +42,6 @@
                 }
             }
         },
-        "/self/server-load": {
-            "get": {
-                "tags": [
-                    "self"
-                ],
-                "summary": "Server Load Details",
-                "description": "Simple server load details.",
-                "operationId": "server_load_details_self_server_load_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ServerLoadCapture"
-                                }
-                            }
-                        }
-                    }
-                },
-                "deprecated": true
-            }
-        },
         "/users/{userid}/~change-password": {
             "post": {
                 "tags": [
@@ -558,7 +535,7 @@
                     "oauth2"
                 ],
                 "summary": "Oauth2 Authorize",
-                "description": "Start OAuth 2 authorization process.\n\n`ua_id` is the user agent identity, a string can be hopefully unique to other user agent.\nLightStands APIs will try to assign same session for same user agent identity,\nwhich can help to against some browsers that frequently removes the local storages.\n\nOAuth 2 PKCE extension is required for LightStands OAuth 2 process.\n\nThis endpoint will redirect the user to LightStands' web application to complete authorization.\n\nMax lengths:\n- `state`: 512 bytes\n- `ua_id`: 256 bytes\n- `code_challenge`: 64 bytes",
+                "description": "Start OAuth 2 authorization process.\n\n`ua_id` is the user agent identity, a string can be hopefully unique to other user agent.\nLightStands APIs will try to assign same session for same user agent identity,\nwhich can help to against some browsers that frequently removes the local storages.\n\nOAuth 2 PKCE extension is required for LightStands OAuth 2 process.\n\nThis endpoint will redirect the user to LightStands' web application to complete authorization.\n\nMax lengths:\n- `state`: 512 bytes\n- `ua_id`: 256 bytes\n- `code_challenge`: 64 bytes\n\nLightStands server software will redirect to `redirect_uri` with these arguments in search string:\n- `code`: a string of authorization code\n- `state`: the `state`\n\nFor example:\n```uri\nhttps://lightstands.xyz/apps/oauth2-callback?code=af2p5b4d3&state=1%40lightstands.xyz\n```\n\nThe software will redirect user to the same uri with the arguments below:\n- `error`: the error name in OAuth 2 standard\n- `error_description`: detailed custom description for the situtation\n- `error_uri`: optional, only exists when the link may help developer out of the situtaion\n- `state`: optional, only exists when we think it can be accessed at the moment.",
                 "operationId": "oauth2_authorize_oauth2__authorize_get",
                 "parameters": [
                     {
@@ -1637,24 +1614,6 @@
                     "ok": false,
                     "errors": {
                         "conditionrequires(token_type,token,created_at)": "revoking the another token by the refresh token requires a session ages 24 hours at least."
-                    }
-                }
-            },
-            "ServerLoadCapture": {
-                "title": "ServerLoadCapture",
-                "required": [
-                    "loader_in_queue",
-                    "loader_throttle_remaining"
-                ],
-                "type": "object",
-                "properties": {
-                    "loader_in_queue": {
-                        "title": "Loader In Queue",
-                        "type": "integer"
-                    },
-                    "loader_throttle_remaining": {
-                        "title": "Loader Throttle Remaining",
-                        "type": "integer"
                     }
                 }
             },
