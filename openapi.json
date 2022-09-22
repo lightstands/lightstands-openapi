@@ -1620,7 +1620,8 @@
             "ServerPublicSettings": {
                 "title": "ServerPublicSettings",
                 "required": [
-                    "api_layer_version"
+                    "api_layer_version",
+                    "quote"
                 ],
                 "type": "object",
                 "properties": {
@@ -1630,6 +1631,10 @@
                     },
                     "hcaptcha_site_key": {
                         "title": "Hcaptcha Site Key",
+                        "type": "string"
+                    },
+                    "quote": {
+                        "title": "Quote",
                         "type": "string"
                     }
                 }
