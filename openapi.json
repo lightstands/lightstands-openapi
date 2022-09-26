@@ -1081,6 +1081,269 @@
                     }
                 }
             }
+        },
+        "/feeds/{feed_url_blake3}/": {
+            "get": {
+                "tags": [
+                    "feeds"
+                ],
+                "summary": "Get Feed Info",
+                "description": "Get feed info for `feed_url_blake3`.\n\n`feed_url_blake3` is the urlsafe base64 of the hashed url. The encoding or url must be UTF-8.\n\nPossible RESTful errors:\n- `notfound(feed_url)` 404",
+                "operationId": "get_feed_info_feeds__feed_url_blake3___get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Feed Url Blake3",
+                            "type": "string"
+                        },
+                        "name": "feed_url_blake3",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicFeed"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/feeds/{feed_url_blake3}/posts/": {
+            "get": {
+                "tags": [
+                    "feeds"
+                ],
+                "summary": "Get Feed Posts",
+                "description": "List posts of the feed.",
+                "operationId": "get_feed_posts_feeds__feed_url_blake3__posts__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Feed Url Blake3",
+                            "type": "string"
+                        },
+                        "name": "feed_url_blake3",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Ref Gt",
+                            "type": "integer"
+                        },
+                        "name": "ref_gt",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "maximum": 128.0,
+                            "type": "integer",
+                            "default": 16
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FeedPosts"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/feeds/{feed_url_blake3}/posts/{post_id_blake3}/content": {
+            "get": {
+                "tags": [
+                    "feeds"
+                ],
+                "summary": "Get Content",
+                "description": "Get specific content for the post.\n\nUse `Accept-Language` to ask for specific language.\nOnly accepts [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) and ignore most variants:\n```\naf, ar, bg, bn, ca, cs, cy, da, de, el, en, es, et, fa, fi, fr, gu, he,\nhi, hr, hu, id, it, ja, kn, ko, lt, lv, mk, ml, mr, ne, nl, no, pa, pl,\npt, ro, ru, sk, sl, so, sq, sv, sw, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw\n```\nThe 9th and later lanaguages will be ignored.\nIt's very recommended to always include `*` in your selector.\n\nUse `Accept` to ask for specific content type, if this header is not present, any one will be picked.\nCurrently (API Version 0) only supports one specific content type (`*/*` is allowed) without weight mark. For example:\n\n- `Accept: */*` work\n- `Accept: text/*` won't work\n- `Accept: text/html` work\n- `Accept: text/html;q=0.9` won't work\n- `Accept: text/html;q=0.9, application/xhtml+xml, */*;q=0.8` won't work\n\nWe may support complete content neogtiation in future, but currently it's been delayed since it's very hard to implement.\nYou can use `/feeds/{feed_url_blake3}/posts/{post_id}` to discover avaliable content types.\n\nPossible RESTful errors:\n- `notfound(feed_url_blake3)`\n- `notfound(feed_url_blake3,post_id)`\n- `notfound(feed_url_blake3,post_id,content_type)`\n- `notfound(feed_url_blake3,post_id,content_type,lang)`",
+                "operationId": "get_content_feeds__feed_url_blake3__posts__post_id_blake3__content_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Feed Url Blake3",
+                            "type": "string"
+                        },
+                        "name": "feed_url_blake3",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Post Id Blake3",
+                            "type": "string"
+                        },
+                        "name": "post_id_blake3",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Accept-Language",
+                            "type": "string"
+                        },
+                        "name": "accept-language",
+                        "in": "header"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Accept",
+                            "type": "string"
+                        },
+                        "name": "accept",
+                        "in": "header"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-Modified-Since",
+                            "type": "string"
+                        },
+                        "name": "if-modified-since",
+                        "in": "header"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-None-Match",
+                            "type": "string"
+                        },
+                        "name": "if-none-match",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "headers": {
+                            "Content-Length": "string",
+                            "Content-Type": "string",
+                            "Content-Language": "int"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/feeds/{feed_url_blake3}/posts/{post_id_blake3}/": {
+            "get": {
+                "tags": [
+                    "feeds"
+                ],
+                "summary": "Get Post",
+                "operationId": "get_post_feeds__feed_url_blake3__posts__post_id_blake3___get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Feed Url Blake3",
+                            "type": "string"
+                        },
+                        "name": "feed_url_blake3",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Post Id Blake3",
+                            "type": "string"
+                        },
+                        "name": "post_id_blake3",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PostView"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -1407,6 +1670,31 @@
                     }
                 }
             },
+            "FeedPosts": {
+                "title": "FeedPosts",
+                "required": [
+                    "number",
+                    "posts"
+                ],
+                "type": "object",
+                "properties": {
+                    "number": {
+                        "title": "Number",
+                        "type": "integer"
+                    },
+                    "last_ref": {
+                        "title": "Last Ref",
+                        "type": "integer"
+                    },
+                    "posts": {
+                        "title": "Posts",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PostView"
+                        }
+                    }
+                }
+            },
             "HTTPValidationError": {
                 "title": "HTTPValidationError",
                 "type": "object",
@@ -1491,6 +1779,66 @@
                     }
                 }
             },
+            "PostView": {
+                "title": "PostView",
+                "required": [
+                    "ref",
+                    "id",
+                    "published_at",
+                    "updated_at",
+                    "feed_ref",
+                    "content_types"
+                ],
+                "type": "object",
+                "properties": {
+                    "ref": {
+                        "title": "Ref",
+                        "type": "integer"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "id_blake3": {
+                        "title": "Id Blake3",
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "link": {
+                        "title": "Link",
+                        "type": "string"
+                    },
+                    "published_at": {
+                        "title": "Published At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "title": "Updated At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "summary": {
+                        "title": "Summary",
+                        "type": "string"
+                    },
+                    "feed_ref": {
+                        "title": "Feed Ref",
+                        "type": "integer"
+                    },
+                    "content_types": {
+                        "title": "Content Types",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "PublicApplication": {
                 "title": "PublicApplication",
                 "required": [
@@ -1537,6 +1885,53 @@
                     },
                     "updated_at": {
                         "title": "Updated At",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "PublicFeed": {
+                "title": "PublicFeed",
+                "required": [
+                    "ref",
+                    "url",
+                    "url_blake3",
+                    "updated_at",
+                    "last_fetched_at"
+                ],
+                "type": "object",
+                "properties": {
+                    "ref": {
+                        "title": "Ref",
+                        "type": "integer"
+                    },
+                    "url": {
+                        "title": "Url",
+                        "type": "string"
+                    },
+                    "url_blake3": {
+                        "title": "Url Blake3",
+                        "type": "string"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "link": {
+                        "title": "Link",
+                        "type": "string"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "title": "Updated At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "last_fetched_at": {
+                        "title": "Last Fetched At",
                         "type": "string",
                         "format": "date-time"
                     }
