@@ -1327,7 +1327,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PostView"
+                                    "$ref": "#/components/schemas/PublicPost"
                                 }
                             }
                         }
@@ -1900,7 +1900,7 @@
                         "title": "Posts",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/PostView"
+                            "$ref": "#/components/schemas/PublicPost"
                         }
                     }
                 }
@@ -1989,66 +1989,6 @@
                     }
                 }
             },
-            "PostView": {
-                "title": "PostView",
-                "required": [
-                    "ref",
-                    "id",
-                    "published_at",
-                    "updated_at",
-                    "feed_ref",
-                    "content_types"
-                ],
-                "type": "object",
-                "properties": {
-                    "ref": {
-                        "title": "Ref",
-                        "type": "integer"
-                    },
-                    "id": {
-                        "title": "Id",
-                        "type": "string"
-                    },
-                    "id_blake3": {
-                        "title": "Id Blake3",
-                        "type": "string",
-                        "format": "binary"
-                    },
-                    "title": {
-                        "title": "Title",
-                        "type": "string"
-                    },
-                    "link": {
-                        "title": "Link",
-                        "type": "string"
-                    },
-                    "published_at": {
-                        "title": "Published At",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "title": "Updated At",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "summary": {
-                        "title": "Summary",
-                        "type": "string"
-                    },
-                    "feed_ref": {
-                        "title": "Feed Ref",
-                        "type": "integer"
-                    },
-                    "content_types": {
-                        "title": "Content Types",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
             "PrivateFeedList": {
                 "title": "PrivateFeedList",
                 "required": [
@@ -2101,13 +2041,17 @@
                     },
                     "created_at": {
                         "title": "Created At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "updated_at": {
                         "title": "Updated At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "tags": {
                         "title": "Tags",
@@ -2139,13 +2083,17 @@
                     },
                     "created_at": {
                         "title": "Created At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "updated_at": {
                         "title": "Updated At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "tags": {
                         "title": "Tags",
@@ -2197,13 +2145,17 @@
                     },
                     "created_at": {
                         "title": "Created At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "updated_at": {
                         "title": "Updated At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     }
                 }
             },
@@ -2244,13 +2196,17 @@
                     },
                     "updated_at": {
                         "title": "Updated At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "last_fetched_at": {
                         "title": "Last Fetched At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     }
                 }
             },
@@ -2291,6 +2247,71 @@
                     },
                     "untags": {
                         "title": "Untags",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "PublicPost": {
+                "title": "PublicPost",
+                "required": [
+                    "ref",
+                    "id",
+                    "id_blake3",
+                    "published_at",
+                    "updated_at",
+                    "feed_ref",
+                    "content_types"
+                ],
+                "type": "object",
+                "properties": {
+                    "ref": {
+                        "title": "Ref",
+                        "type": "integer"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "id_blake3": {
+                        "title": "Id Blake3",
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "link": {
+                        "title": "Link",
+                        "type": "string"
+                    },
+                    "published_at": {
+                        "title": "Published At",
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
+                    },
+                    "updated_at": {
+                        "title": "Updated At",
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
+                    },
+                    "summary": {
+                        "title": "Summary",
+                        "type": "string"
+                    },
+                    "feed_ref": {
+                        "title": "Feed Ref",
+                        "type": "integer"
+                    },
+                    "content_types": {
+                        "title": "Content Types",
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -2493,13 +2514,17 @@
                     },
                     "expired_at": {
                         "title": "Expired At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "created_at": {
                         "title": "Created At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "active": {
                         "title": "Active",
@@ -2515,8 +2540,10 @@
                     },
                     "updated_at": {
                         "title": "Updated At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "user_agent": {
                         "$ref": "#/components/schemas/UserAgent"
@@ -2550,13 +2577,17 @@
                     },
                     "expired_at": {
                         "title": "Expired At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "created_at": {
                         "title": "Created At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "active": {
                         "title": "Active",
@@ -2572,8 +2603,10 @@
                     },
                     "updated_at": {
                         "title": "Updated At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "user_agent": {
                         "$ref": "#/components/schemas/UserAgent"
@@ -2601,13 +2634,17 @@
                     },
                     "created_at": {
                         "title": "Created At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "request_verification_at": {
                         "title": "Request Verification At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     },
                     "request_verification_counter": {
                         "title": "Request Verification Counter",
@@ -2664,8 +2701,10 @@
                     },
                     "created_at": {
                         "title": "Created At",
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     }
                 }
             },
