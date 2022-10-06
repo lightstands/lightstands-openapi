@@ -1082,6 +1082,63 @@
                 }
             }
         },
+        "/feeds/~resolve": {
+            "post": {
+                "tags": [
+                    "feeds"
+                ],
+                "summary": "Resolve Feed",
+                "description": "Resolve the feed url and tell the server software listen to the feed if possible.\n\nThis endpoint have 1 second delay for each call to prevent abuse.",
+                "operationId": "resolve_feed_feeds__resolve_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResolveFeedOpts"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResolvedFeed"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
         "/feeds/{feed_url_blake3}/": {
             "get": {
                 "tags": [
@@ -2316,6 +2373,36 @@
                         "items": {
                             "type": "string"
                         }
+                    }
+                }
+            },
+            "ResolveFeedOpts": {
+                "title": "ResolveFeedOpts",
+                "required": [
+                    "url"
+                ],
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "title": "Url",
+                        "type": "string"
+                    }
+                }
+            },
+            "ResolvedFeed": {
+                "title": "ResolvedFeed",
+                "required": [
+                    "ok",
+                    "feed"
+                ],
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "title": "Ok",
+                        "type": "boolean"
+                    },
+                    "feed": {
+                        "$ref": "#/components/schemas/PublicFeed"
                     }
                 }
             },
