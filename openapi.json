@@ -1242,6 +1242,16 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
                     "422": {
                         "description": "Validation Error",
                         "content": {
@@ -2334,8 +2344,7 @@
                     },
                     "id_blake3": {
                         "title": "Id Blake3",
-                        "type": "string",
-                        "format": "binary"
+                        "type": "string"
                     },
                     "title": {
                         "title": "Title",
