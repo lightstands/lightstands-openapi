@@ -1229,6 +1229,15 @@
                         },
                         "name": "limit",
                         "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Ref Le",
+                            "type": "integer"
+                        },
+                        "name": "ref_le",
+                        "in": "query"
                     }
                 ],
                 "responses": {
