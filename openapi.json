@@ -1156,6 +1156,24 @@
                         },
                         "name": "feed_url_blake3",
                         "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-Modified-Since",
+                            "type": "string"
+                        },
+                        "name": "if-modified-since",
+                        "in": "header"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-None-Match",
+                            "type": "string"
+                        },
+                        "name": "if-none-match",
+                        "in": "header"
                     }
                 ],
                 "responses": {
@@ -1395,6 +1413,24 @@
                         },
                         "name": "post_id_blake3",
                         "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-Modified-Since",
+                            "type": "string"
+                        },
+                        "name": "if-modified-since",
+                        "in": "header"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-None-Match",
+                            "type": "string"
+                        },
+                        "name": "if-none-match",
+                        "in": "header"
                     }
                 ],
                 "responses": {
