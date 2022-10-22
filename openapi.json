@@ -48,7 +48,7 @@
                     "users"
                 ],
                 "summary": "Change Password",
-                "description": "Change password for a user. A user can change it's password.\nRequires scope: `user.change_password`.\n\nPossible errors:\n- `unauthorised`\n- `scopenotcovered(user.change_password)`",
+                "description": "Change password for a user. A user can change it's password.\nRequires scope: `user.change_password`.\n\nPossible RPC errors:\n- `unauthorised` (HTTP 403)\n- `scopenotcovered(user.change_password)` (HTTP 401)\n- `badformat(new_password)` (HTTP 400)",
                 "operationId": "change_password_users__userid___change_password_post",
                 "parameters": [
                     {
@@ -87,6 +87,16 @@
                     },
                     "403": {
                         "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -810,7 +820,7 @@
                     "creation requests"
                 ],
                 "summary": "Put Creation Request",
-                "description": "Request user creation (or registration) process. The `req_id` should be in format \"\\<verification_kind\\>:\\<verification_identity\\>\".\n\nSupported verification kind(s):\n- `email`: the identity should be the email address\n\nPossible Restful errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised. (HTTP 400)\n- `bot`: You are being detected as a bot. (HTTP 403)\n- `hcaptcharequired`: This endpoint requires hcaptcha verification. (HTTP 403)",
+                "description": "Request user creation (or registration) process. The `req_id` should be in format \"\\<verification_kind\\>,\\<verification_identity\\>\".\n\nSupported verification kind(s):\n- `email`: the identity should be the email address\n\nPossible Restful errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised. (HTTP 400)\n- `bot`: You are being detected as a bot. (HTTP 403)\n- `hcaptcharequired`: This endpoint requires hcaptcha verification. (HTTP 403)",
                 "operationId": "put_creation_request_creation_requests__req_id__put",
                 "parameters": [
                     {
@@ -944,7 +954,7 @@
                     "creation requests"
                 ],
                 "summary": "Resolve Creation Request",
-                "description": "Try to resolve the creation request.\n\nPossible errors:\n- `notfound(req_id)`\n- `exists(username)`",
+                "description": "Try to resolve the creation request.\n\nPossible RESTful errors:\n- `notfound(req_id)` (HTTP 404)\n\nPossible RPC erros:\n- `exists(username)` (HTTP 409)\n- `badformat(username)` (HTTP 400)",
                 "operationId": "resolve_creation_request_creation_requests__req_id___resolve_post",
                 "parameters": [
                     {
@@ -998,6 +1008,16 @@
                     },
                     "409": {
                         "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1855,7 +1875,8 @@
                     "username": {
                         "title": "Username",
                         "maxLength": 24,
-                        "minLength": 5,
+                        "minLength": 6,
+                        "pattern": "^[a-zA-Z0-9\\-_]*$",
                         "type": "string"
                     },
                     "challenge": {
@@ -2097,6 +2118,9 @@
                 "properties": {
                     "new_password": {
                         "title": "New Password",
+                        "maxLength": 64,
+                        "minLength": 8,
+                        "pattern": "^[a-zA-Z0-9\\-_\\$%&@^`~.,;:\\\\/|<>*+!?=\\[\\]{}\\(\\)]*$",
                         "type": "string"
                     }
                 }
