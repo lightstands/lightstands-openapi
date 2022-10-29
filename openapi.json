@@ -820,7 +820,7 @@
                     "creation requests"
                 ],
                 "summary": "Put Creation Request",
-                "description": "Request user creation (or registration) process. The `req_id` should be in format \"\\<verification_kind\\>,\\<verification_identity\\>\".\n\nSupported verification kind(s):\n- `email`: the identity should be the email address\n\nPossible Restful errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised. (HTTP 400)\n- `bot`: You are being detected as a bot. (HTTP 403)\n- `hcaptcharequired`: This endpoint requires hcaptcha verification. (HTTP 403)",
+                "description": "Request user creation (or registration) process. The `req_id` should be in format \"\\<verification_kind\\>,\\<verification_identity\\>\".\n\nSupported verification kind(s):\n- `email`: the identity should be the email address\n\nPossible RESTful errors:\n- `badformat(req_id)`: the format of `req_id` could not be recognised. (HTTP 400)\n- `bot`: You are being detected as a bot. (HTTP 403)\n- `hcaptcharequired`: This endpoint requires hcaptcha verification. (HTTP 403)\n- `cancel`: the request is cancelled by server due the configuration. (HTTP 503)",
                 "operationId": "put_creation_request_creation_requests__req_id__put",
                 "parameters": [
                     {
@@ -1477,6 +1477,139 @@
                 }
             }
         },
+        "/feedlists/": {
+            "get": {
+                "tags": [
+                    "feed lists"
+                ],
+                "summary": "List Feed Lists",
+                "description": "List all feed lists this user can access.\n\nRequires scope \"feedlist.list\".",
+                "operationId": "list_feed_lists_feedlists__get",
+                "parameters": [
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "type": "integer",
+                            "default": 64
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "After Id",
+                            "type": "integer"
+                        },
+                        "name": "after_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FeedListMetaList"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "feed lists"
+                ],
+                "summary": "Create Feed List",
+                "description": "Create a new feed list with `name` as the name.\n\nThis endpoint receive almost identical arguments from \"Patch Feed List\".\nThe creation will fail if the patched size reach the limit.\n\nRequires scope \"feedlist.new\". The creation of the second or later list requires golden pass access.\n\nPossible RESTful Errors:\n- `goldenpassrequired` (HTTP 402)\n- `reachsizelimit` (HTTP 507)\n- `unauthorized` (HTTP 401)",
+                "operationId": "create_feed_list_feedlists__put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/NewFeedListOpts"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PrivateFeedList"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "507": {
+                        "description": "Insufficient Storage",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
         "/feedlists/{list_id}": {
             "get": {
                 "tags": [
@@ -1568,74 +1701,6 @@
                     },
                     "507": {
                         "description": "Insufficient Storage",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/APIResErrBase"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2AuthorizationCodeBearer": []
-                    }
-                ]
-            }
-        },
-        "/feedlists/": {
-            "get": {
-                "tags": [
-                    "feed lists"
-                ],
-                "summary": "List Feed Lists",
-                "description": "List all feed lists this user can access.\n\nRequires scope \"feedlist.list\".",
-                "operationId": "list_feed_lists_feedlists__get",
-                "parameters": [
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Limit",
-                            "type": "integer",
-                            "default": 64
-                        },
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "After Id",
-                            "type": "integer"
-                        },
-                        "name": "after_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/FeedListMetaList"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2048,6 +2113,57 @@
                         "items": {
                             "$ref": "#/components/schemas/ValidationError"
                         }
+                    }
+                }
+            },
+            "NewFeedListOpts": {
+                "title": "NewFeedListOpts",
+                "required": [
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "in": {
+                        "title": "In",
+                        "type": "array",
+                        "items": {
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        }
+                    },
+                    "rm": {
+                        "title": "Rm",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "tags": {
+                        "title": "Tags",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "untags": {
+                        "title": "Untags",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
                     }
                 }
             },
@@ -2563,7 +2679,8 @@
                 "title": "ServerPublicSettings",
                 "required": [
                     "api_layer_version",
-                    "quote"
+                    "quote",
+                    "accept_creation_requests"
                 ],
                 "type": "object",
                 "properties": {
@@ -2578,6 +2695,10 @@
                     "quote": {
                         "title": "Quote",
                         "type": "string"
+                    },
+                    "accept_creation_requests": {
+                        "title": "Accept Creation Requests",
+                        "type": "boolean"
                     }
                 }
             },
