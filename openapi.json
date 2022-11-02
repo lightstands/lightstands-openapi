@@ -260,7 +260,7 @@
                     "sessions"
                 ],
                 "summary": "Revoke Session",
-                "description": "Revoke a session by the access token or the refresh token.\n`token_type` is the type of `token`, should be one of:\n- `access_token`\n- `refresh_token`\n\nIf revoking by a refresh token, this request must be:\n- authorized by the session itself.\n- authorized as another session with scope `session.revoke_other`, which have been created at least 24 hours.\n\nPossible RPC errors:\n- `conditionrequires(token_type,token,created_at)`\n- `badformat(token_type)`\n- `notfound(token_type,token)`",
+                "description": "Revoke a session by the access token or the refresh token.\n`token_type` is the type of `token`, should be one of:\n- `access_token`\n- `refresh_token`\n\nIf revoking by a refresh token, this request must be:\n- authorized by the session itself.\n- authorized as another session with scope `session.revoke_other`, which have been created at least 24 hours.\n\nPossible RPC errors:\n- `conditionrequires(token_type,token,created_at)`\n- `badformat(token_type)`\n- `notfound(token_type,token)` (HTTP 404)\n- `unauthorized` (HTTP 401)\n- `scopenotcovered(session.revoke_other)` (HTTP 403)",
                 "operationId": "revoke_session_access_tokens__revoke_post",
                 "requestBody": {
                     "content": {
