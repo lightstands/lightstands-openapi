@@ -1276,6 +1276,24 @@
                         },
                         "name": "ref_le",
                         "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-Modified-Since",
+                            "type": "string"
+                        },
+                        "name": "if-modified-since",
+                        "in": "header"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-None-Match",
+                            "type": "string"
+                        },
+                        "name": "if-none-match",
+                        "in": "header"
                     }
                 ],
                 "responses": {
