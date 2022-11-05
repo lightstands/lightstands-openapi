@@ -1280,6 +1280,38 @@
                     {
                         "required": false,
                         "schema": {
+                            "title": "Pub Order",
+                            "anyOf": [
+                                {
+                                    "enum": [
+                                        "asc"
+                                    ],
+                                    "type": "string"
+                                },
+                                {
+                                    "enum": [
+                                        "desc"
+                                    ],
+                                    "type": "string"
+                                }
+                            ],
+                            "default": "desc"
+                        },
+                        "name": "pub_order",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Ref Ge",
+                            "type": "integer"
+                        },
+                        "name": "ref_ge",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
                             "title": "If-Modified-Since",
                             "type": "string"
                         },
