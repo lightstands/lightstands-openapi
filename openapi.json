@@ -1236,7 +1236,7 @@
                     "feeds"
                 ],
                 "summary": "Get Feed Posts",
-                "description": "List posts of the feed.",
+                "description": "List posts of the feed.\n\n`pub_since` and `pub_before` are unix timestamps in seconds, to query specific ranges of the posts which published at.\n\nChanged in 0.3: the selector starting by `ref_` is deprecated.\nLightStands Server Software does not promise the ref number order is time-dependent.\nThey will be removed in 0.4.",
                 "operationId": "get_feed_posts_feeds__feed_url_blake3__posts__get",
                 "parameters": [
                     {
@@ -1250,6 +1250,7 @@
                     },
                     {
                         "required": false,
+                        "deprecated": true,
                         "schema": {
                             "title": "Ref Gt",
                             "type": "integer"
@@ -1270,6 +1271,7 @@
                     },
                     {
                         "required": false,
+                        "deprecated": true,
                         "schema": {
                             "title": "Ref Le",
                             "type": "integer"
@@ -1302,11 +1304,30 @@
                     },
                     {
                         "required": false,
+                        "deprecated": true,
                         "schema": {
                             "title": "Ref Ge",
                             "type": "integer"
                         },
                         "name": "ref_ge",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Pub Since",
+                            "type": "integer"
+                        },
+                        "name": "pub_since",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Pub Before",
+                            "type": "integer"
+                        },
+                        "name": "pub_before",
                         "in": "query"
                     },
                     {
