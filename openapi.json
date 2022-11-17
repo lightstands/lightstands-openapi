@@ -254,6 +254,94 @@
                 ]
             }
         },
+        "/users/{userid}/tags/_read": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "List Read Tags",
+                "description": "List read tags the user created.\n\nRequires `tags.read` scope.\n\nPossible RESTful errors:\n- `unauthorized` (HTTP 401)",
+                "operationId": "list_read_tags_users__userid__tags__read_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Userid",
+                            "type": "integer"
+                        },
+                        "name": "userid",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Updated Since",
+                            "type": "integer"
+                        },
+                        "name": "updated_since",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "maximum": 128.0,
+                            "type": "integer",
+                            "default": 64
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserPrivateReadTagList"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
         "/access-tokens/~revoke": {
             "post": {
                 "tags": [
@@ -1548,6 +1636,156 @@
                 }
             }
         },
+        "/feeds/{feed_url_blake3}/posts/{post_id_blake3}/tags-of/{userid}/": {
+            "get": {
+                "tags": [
+                    "feeds"
+                ],
+                "summary": "Get Post Tags",
+                "description": "Get one user's tags for one post.\n\nRequires `tags.read` scope.\n\nPossible RESTful Errors:\n- `notfound(feed_url_blake3)`(HTTP 404)\n- `notfound(feed_url_blake3, post_id_blake3)`(HTTP 404)\n- `unauthorised` (HTTP 401)",
+                "operationId": "get_post_tags_feeds__feed_url_blake3__posts__post_id_blake3__tags_of__userid___get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Feed Url Blake3",
+                            "type": "string"
+                        },
+                        "name": "feed_url_blake3",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Post Id Blake3",
+                            "type": "string"
+                        },
+                        "name": "post_id_blake3",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Userid",
+                            "type": "integer"
+                        },
+                        "name": "userid",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-Modified-Since",
+                            "type": "string"
+                        },
+                        "name": "if-modified-since",
+                        "in": "header"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-None-Match",
+                            "type": "string"
+                        },
+                        "name": "if-none-match",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PostTagList"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "feeds"
+                ],
+                "summary": "Patch Post Tags",
+                "description": "Tag or untag a post for a user.\n\nSupported tags:\n- `_read` (the read status of a post)\n\nRequires `tags.write` scope.\n\nPossible RESTful Errors:\n- `notfound(feed_url_blake3)`(HTTP 404)\n- `notfound(feed_url_blake3, post_id_blake3)`(HTTP 404)\n- `unauthorised` (HTTP 401)",
+                "operationId": "patch_post_tags_feeds__feed_url_blake3__posts__post_id_blake3__tags_of__userid___patch",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Feed Url Blake3",
+                            "type": "string"
+                        },
+                        "name": "feed_url_blake3",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Post Id Blake3",
+                            "type": "string"
+                        },
+                        "name": "post_id_blake3",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Userid",
+                            "type": "integer"
+                        },
+                        "name": "userid",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_patch_post_tags_feeds__feed_url_blake3__posts__post_id_blake3__tags_of__userid___patch"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
         "/feedlists/": {
             "get": {
                 "tags": [
@@ -1942,6 +2180,26 @@
                     }
                 }
             },
+            "Body_patch_post_tags_feeds__feed_url_blake3__posts__post_id_blake3__tags_of__userid___patch": {
+                "title": "Body_patch_post_tags_feeds__feed_url_blake3__posts__post_id_blake3__tags_of__userid___patch",
+                "type": "object",
+                "properties": {
+                    "tag": {
+                        "title": "Tag",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "untag": {
+                        "title": "Untag",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "ChallengeAnswer": {
                 "title": "ChallengeAnswer",
                 "required": [
@@ -2309,6 +2567,22 @@
                         "minLength": 8,
                         "pattern": "^[a-zA-Z0-9\\-_\\$%&@^`~.,;:\\\\/|<>*+!?=\\[\\]{}\\(\\)]*$",
                         "type": "string"
+                    }
+                }
+            },
+            "PostTagList": {
+                "title": "PostTagList",
+                "required": [
+                    "tags"
+                ],
+                "type": "object",
+                "properties": {
+                    "tags": {
+                        "title": "Tags",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 }
             },
@@ -3035,6 +3309,37 @@
                     }
                 }
             },
+            "UserPrivateReadTagList": {
+                "title": "UserPrivateReadTagList",
+                "required": [
+                    "number",
+                    "tag",
+                    "has_next",
+                    "post_refs"
+                ],
+                "type": "object",
+                "properties": {
+                    "number": {
+                        "title": "Number",
+                        "type": "integer"
+                    },
+                    "tag": {
+                        "title": "Tag",
+                        "type": "string"
+                    },
+                    "has_next": {
+                        "title": "Has Next",
+                        "type": "integer"
+                    },
+                    "post_refs": {
+                        "title": "Post Refs",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            },
             "UserPrivateUser": {
                 "title": "UserPrivateUser",
                 "required": [
@@ -3170,7 +3475,9 @@
                             "feedlist.read": "Read feed lists",
                             "feedlist.rm": "Remove feed lists",
                             "feedlist.new": "Create new feed lists",
-                            "feedlist.list": "List feed lists"
+                            "feedlist.list": "List feed lists",
+                            "tags.read": "Read tags",
+                            "tags.write": "Write tags"
                         },
                         "authorizationUrl": "/oauth2/~authorize",
                         "tokenUrl": "/oauth2/~token"
