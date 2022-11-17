@@ -2581,7 +2581,7 @@
                         "title": "Tags",
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/UserPrivatePostTag"
                         }
                     }
                 }
@@ -3309,13 +3309,47 @@
                     }
                 }
             },
+            "UserPrivatePostTag": {
+                "title": "UserPrivatePostTag",
+                "required": [
+                    "tag",
+                    "post_ref",
+                    "created_at",
+                    "updated_at"
+                ],
+                "type": "object",
+                "properties": {
+                    "tag": {
+                        "title": "Tag",
+                        "type": "string"
+                    },
+                    "post_ref": {
+                        "title": "Post Ref",
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
+                    },
+                    "updated_at": {
+                        "title": "Updated At",
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
+                    }
+                }
+            },
             "UserPrivateReadTagList": {
                 "title": "UserPrivateReadTagList",
                 "required": [
                     "number",
                     "tag",
                     "has_next",
-                    "post_refs"
+                    "tags"
                 ],
                 "type": "object",
                 "properties": {
@@ -3329,13 +3363,13 @@
                     },
                     "has_next": {
                         "title": "Has Next",
-                        "type": "integer"
+                        "type": "boolean"
                     },
-                    "post_refs": {
-                        "title": "Post Refs",
+                    "tags": {
+                        "title": "Tags",
                         "type": "array",
                         "items": {
-                            "type": "integer"
+                            "$ref": "#/components/schemas/UserPrivatePostTag"
                         }
                     }
                 }
