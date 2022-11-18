@@ -3340,6 +3340,13 @@
                         "examples": [
                             612871200
                         ]
+                    },
+                    "untagged_at": {
+                        "title": "Untagged At",
+                        "type": "integer",
+                        "examples": [
+                            612871200
+                        ]
                     }
                 }
             },
