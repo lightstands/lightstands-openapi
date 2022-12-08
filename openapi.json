@@ -1854,6 +1854,77 @@
                 ]
             }
         },
+        "/feeds/{feed_url_blake3}/fetch-logs": {
+            "get": {
+                "tags": [
+                    "feeds"
+                ],
+                "summary": "Get Feed Fetch Logs",
+                "description": "Get recent fetching logs for specific feed.\n\nNote. LightStands Server Software only store days of logs.\n\nPossible RESTful errors:\n- `notfound(feed_url_blake3)` (HTTP 404)",
+                "operationId": "get_feed_fetch_logs_feeds__feed_url_blake3__fetch_logs_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Feed Url Blake3",
+                            "type": "string"
+                        },
+                        "name": "feed_url_blake3",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-Modified-Since",
+                            "type": "string"
+                        },
+                        "name": "if-modified-since",
+                        "in": "header"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-None-Match",
+                            "type": "string"
+                        },
+                        "name": "if-none-match",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FetchLogChunk"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/feedlists/": {
             "get": {
                 "tags": [
@@ -2517,6 +2588,53 @@
                         "items": {
                             "$ref": "#/components/schemas/PublicPost"
                         }
+                    }
+                }
+            },
+            "FetchLogChunk": {
+                "title": "FetchLogChunk",
+                "required": [
+                    "number",
+                    "chunk"
+                ],
+                "type": "object",
+                "properties": {
+                    "number": {
+                        "title": "Number",
+                        "type": "integer"
+                    },
+                    "chunk": {
+                        "title": "Chunk",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FetchLogEntry"
+                        }
+                    }
+                }
+            },
+            "FetchLogEntry": {
+                "title": "FetchLogEntry",
+                "type": "object",
+                "properties": {
+                    "feed_url": {
+                        "title": "Feed Url",
+                        "type": "string"
+                    },
+                    "time": {
+                        "title": "Time",
+                        "type": "integer"
+                    },
+                    "fetcher": {
+                        "title": "Fetcher",
+                        "type": "string"
+                    },
+                    "status_code": {
+                        "title": "Status Code",
+                        "type": "integer"
+                    },
+                    "complete_time": {
+                        "title": "Complete Time",
+                        "type": "integer"
                     }
                 }
             },
