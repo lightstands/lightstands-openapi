@@ -1609,7 +1609,7 @@
                         "headers": {
                             "Content-Length": "string",
                             "Content-Type": "string",
-                            "Content-Language": "int"
+                            "Content-Language": "string"
                         }
                     },
                     "404": {
