@@ -533,6 +533,76 @@
                 ]
             }
         },
+        "/access-tokens/specific/{ref_tok}/scope": {
+            "post": {
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Write Session Scope By Refresh Token",
+                "description": "Grant or remove specific scope item for a session.\n\n| Requires `behalf` scope | Itself | Other Session |\n| ----------------------- | ------ | ------------- |\n| Disable                 | No     | Yes           |\n| Enable                  | Yes    | Yes           |",
+                "operationId": "write_session_scope_by_refresh_token_access_tokens_specific__ref_tok__scope_post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Ref Tok",
+                            "type": "string"
+                        },
+                        "name": "ref_tok",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_write_session_scope_by_refresh_token_access_tokens_specific__ref_tok__scope_post"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
         "/access-tokens/~create-by-password": {
             "post": {
                 "tags": [
@@ -701,7 +771,7 @@
                     "oauth2"
                 ],
                 "summary": "Oauth2 Authorize",
-                "description": "Start OAuth 2 authorization process.\n\n`ua_id` is the user agent identity, a string can be hopefully unique to other user agent.\nLightStands APIs will try to assign same session for same user agent identity,\nwhich can help to against some browsers that frequently removes the local storages.\n\nOAuth 2 PKCE extension is required for LightStands OAuth 2 process.\n\nThis endpoint will redirect the user to LightStands' web application to complete authorization.\n\nMax lengths:\n- `state`: 512 bytes\n- `ua_id`: 256 bytes\n- `code_challenge`: 64 bytes\n\nLightStands server software will redirect to `redirect_uri` with these arguments in search string:\n- `code`: a string of authorization code\n- `state`: the `state`\n\nFor example:\n```uri\nhttps://lightstands.xyz/apps/oauth2-callback?code=af2p5b4d3&state=1%40lightstands.xyz\n```\n\nThe software will redirect user to the same uri with the arguments below:\n- `error`: the error name in OAuth 2 standard\n- `error_description`: detailed custom description for the situtation\n- `error_uri`: optional, only exists when the link may help developer out of the situtaion\n- `state`: optional, only exists when we think it can be accessed at the moment.",
+                "description": "Start OAuth 2 authorization process.\n\n`ua_id` is the user agent identity, a string can be hopefully unique to other user agent.\nLightStands APIs will try to assign same session for same user agent identity,\nwhich can help to against some browsers that frequently removes the local storages.\n\n`ref_tok` is an optional refresh token. When this field specified,\nthe authorization process will not create a new token, but authorize the original token.\nThe token must have been created under the application of `client_id`.\n\nOAuth 2 PKCE extension is required for LightStands OAuth 2 process.\n\nThis endpoint will redirect the user to LightStands' web application to complete authorization.\n\nMax lengths:\n- `state`: 512 bytes\n- `ua_id`: 256 bytes\n- `code_challenge`: 64 bytes\n\nLightStands server software will redirect to `redirect_uri` with these arguments in search string:\n- `code`: a string of authorization code\n- `state`: the `state`\n\nFor example:\n```uri\nhttps://lightstands.xyz/apps/oauth2-callback?code=af2p5b4d3&state=1%40lightstands.xyz\n```\n\nThe software will redirect user to the same uri with the arguments below:\n- `error`: the error name in OAuth 2 standard\n- `error_description`: detailed custom description for the situtation\n- `error_uri`: optional, only exists when the link may help developer out of the situtaion\n- `state`: optional, only exists when we think it can be accessed at the moment.",
                 "operationId": "oauth2_authorize_oauth2__authorize_get",
                 "parameters": [
                     {
@@ -775,6 +845,33 @@
                         },
                         "name": "ua_id",
                         "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Ref Tok",
+                            "type": "string"
+                        },
+                        "name": "ref_tok",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-Modified-Since",
+                            "type": "string"
+                        },
+                        "name": "if-modified-since",
+                        "in": "header"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-None-Match",
+                            "type": "string"
+                        },
+                        "name": "if-none-match",
+                        "in": "header"
                     }
                 ],
                 "responses": {
@@ -810,6 +907,26 @@
                 "summary": "Oauth2 Exchange Access Token",
                 "description": "Exchange authorization code for access token.\n\n`client_secret` is required when the application have `client_secret`, otherwise the field will be ignored.\n\nHTTP status 400 will be returned for normal unexpected conditions:\n- `unsupported_grant_type`\n- `invalid_request`\n- `invalid_client`\n- `invalid_grant`: PKCE chanllenge failed\n\nHTTP status 401 will be returned if the request encounter an unrealiable state:\n- `invalid_client`: the application have been exists, but currently is unavaliable (deleted or wrong secret)",
                 "operationId": "oauth2_exchange_access_token_oauth2__token_post",
+                "parameters": [
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-Modified-Since",
+                            "type": "string"
+                        },
+                        "name": "if-modified-since",
+                        "in": "header"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "If-None-Match",
+                            "type": "string"
+                        },
+                        "name": "if-none-match",
+                        "in": "header"
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/x-www-form-urlencoded": {
@@ -2355,6 +2472,26 @@
                         "type": "array",
                         "items": {
                             "type": "integer"
+                        }
+                    }
+                }
+            },
+            "Body_write_session_scope_by_refresh_token_access_tokens_specific__ref_tok__scope_post": {
+                "title": "Body_write_session_scope_by_refresh_token_access_tokens_specific__ref_tok__scope_post",
+                "type": "object",
+                "properties": {
+                    "add": {
+                        "title": "Add",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "rm": {
+                        "title": "Rm",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
                         }
                     }
                 }
