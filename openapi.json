@@ -539,7 +539,7 @@
                     "sessions"
                 ],
                 "summary": "Write Session Scope By Refresh Token",
-                "description": "Grant or remove specific scope item for a session.\n\n| Requires `behalf` scope | Itself | Other Session |\n| ----------------------- | ------ | ------------- |\n| Disable                 | No     | Yes           |\n| Enable                  | Yes    | Yes           |",
+                "description": "Grant or remove specific scope item for a session.\n\n| Requires `behalf` scope | Itself | Other Session |\n| ----------------------- | ------ | ------------- |\n| Disable                 | No     | Yes           |\n| Enable                  | Yes    | Yes           |\n\nPossible RESTful errors:\n- `notfound(ref_tok)` (HTTP 404)\n- `unauthorized` (HTTP 401)",
                 "operationId": "write_session_scope_by_refresh_token_access_tokens_specific__ref_tok__scope_post",
                 "parameters": [
                     {
