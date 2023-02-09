@@ -192,7 +192,7 @@
                     "users"
                 ],
                 "summary": "Get User Private Information",
-                "description": "Get user public and private information of `userid`. Including:\n\n- username\n- email address\n\nPossible RESTful Errors:\n- `scopenotcovered(user.read)`, `403`\n- `notfound(userid)`, `404`",
+                "description": "Get user public and private information of `userid`. Including:\n\n- username\n- email address\n\nPossible RESTful Errors:\n- `scopenotcovered(user.read)` or `forbidden`, `403`\n- `notfound(userid)`, `404`",
                 "operationId": "get_user_private_information_users__userid__private_get",
                 "parameters": [
                     {
@@ -346,7 +346,7 @@
                     "users"
                 ],
                 "summary": "Patch Read Tags For User",
-                "description": "Patch the read tags of one users.\n\nElements in `tag` and `untag` should be post refs, non-exists refs will be sliently ignored.\n\nRequires \"tag.write\" scope.",
+                "description": "Patch the read tags of one users.\n\nElements in `tag` and `untag` should be post refs, non-exists refs will be sliently ignored.\n\nRequires \"tag.write\" scope.\n\nPossible RESTful errors:\n- `unauthorised` (HTTP 401)",
                 "operationId": "patch_read_tags_for_user_users__userid__tags__read_patch",
                 "parameters": [
                     {
@@ -987,7 +987,7 @@
                     "applications"
                 ],
                 "summary": "Get App By Client Id",
-                "description": "Get application information by client identity.",
+                "description": "Get application information by client identity.\n\nPossible RESTful errors:\n- `notfound(client_id)` (HTTP 404)",
                 "operationId": "get_app_by_client_id_apps_by_client_id__client_id__get",
                 "parameters": [
                     {
@@ -1016,7 +1016,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIResBase"
+                                    "$ref": "#/components/schemas/APIResErrBase"
                                 }
                             }
                         }
@@ -1032,6 +1032,62 @@
                         }
                     }
                 }
+            },
+            "patch": {
+                "tags": [
+                    "applications"
+                ],
+                "summary": "Configure App",
+                "description": "Set app configuration.\n\nPossible RESTful errors:\n- `badformat(redirect_uri)` (HTTP 400)\n- `forbidden` (HTTP 403)\n- `notfound(client_id)` (HTTP 404)",
+                "operationId": "configure_app_apps_by_client_id__client_id__patch",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Client Id",
+                            "type": "string"
+                        },
+                        "name": "client_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AppConfiguration"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicApplication"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
             }
         },
         "/apps/by-id/{appid}": {
@@ -1040,7 +1096,7 @@
                     "applications"
                 ],
                 "summary": "Get App By Appid",
-                "description": "Get application information by application id.",
+                "description": "Get application information by application id.\n\nPossible RESTful errors:\n- `notfound(appid)` (HTTP 404)",
                 "operationId": "get_app_by_appid_apps_by_id__appid__get",
                 "parameters": [
                     {
@@ -1069,7 +1125,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIResBase"
+                                    "$ref": "#/components/schemas/APIResErrBase"
                                 }
                             }
                         }
@@ -1085,6 +1141,161 @@
                         }
                     }
                 }
+            }
+        },
+        "/apps/by-owner-id/{owner_id}/": {
+            "get": {
+                "tags": [
+                    "applications"
+                ],
+                "summary": "List Apps By Userid",
+                "description": "List apps for an user, `owner_id` is the userid.\nThis endpoint won't fail with 404 even if the userid `owner_id` is not found on LightStands.\n\nRequires `apps.x` scope.\n\nPossible RESTful errors:\n- `forbidden` (HTTP 403)",
+                "operationId": "list_apps_by_userid_apps_by_owner_id__owner_id___get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Owner Id",
+                            "type": "integer"
+                        },
+                        "name": "owner_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Appid Gt",
+                            "type": "integer"
+                        },
+                        "name": "appid_gt",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "maximum": 256.0,
+                            "type": "integer",
+                            "default": 32
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AppListChunk"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/apps/": {
+            "put": {
+                "tags": [
+                    "applications"
+                ],
+                "summary": "New App",
+                "description": "Create a new application. Requires \"apps.w\" scope.\n\nIf `owner_id` not supplied, use the active session's user.\n\nPossible RESTful errors:\n- `forbidden` (HTTP 403)\n- `badformat(redirect_uri)` (HTTP 400)\n- `unauthorised` (HTTP 401)",
+                "operationId": "new_app_apps__put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AppRecipe"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicApplication"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIResErrBase"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
             }
         },
         "/creation_requests/{req_id}": {
@@ -2295,19 +2506,6 @@
     },
     "components": {
         "schemas": {
-            "APIResBase": {
-                "title": "APIResBase",
-                "required": [
-                    "ok"
-                ],
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "title": "Ok",
-                        "type": "boolean"
-                    }
-                }
-            },
             "APIResErrBase": {
                 "title": "APIResErrBase",
                 "type": "object",
@@ -2363,6 +2561,71 @@
                     },
                     "access_token": {
                         "$ref": "#/components/schemas/UserPrivateAccessTokenWithoutToken"
+                    }
+                }
+            },
+            "AppConfiguration": {
+                "title": "AppConfiguration",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "redirect_uri": {
+                        "title": "Redirect Uri",
+                        "type": "string"
+                    },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string"
+                    }
+                }
+            },
+            "AppListChunk": {
+                "title": "AppListChunk",
+                "required": [
+                    "n",
+                    "chunk"
+                ],
+                "type": "object",
+                "properties": {
+                    "n": {
+                        "title": "N",
+                        "type": "integer"
+                    },
+                    "chunk": {
+                        "title": "Chunk",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PublicApplication"
+                        }
+                    }
+                }
+            },
+            "AppRecipe": {
+                "title": "AppRecipe",
+                "required": [
+                    "name",
+                    "scope"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string"
+                    },
+                    "owner_id": {
+                        "title": "Owner Id",
+                        "type": "integer"
+                    },
+                    "redirect_uri": {
+                        "title": "Redirect Uri",
+                        "type": "string"
                     }
                 }
             },
@@ -3861,7 +4124,10 @@
                             "feedlist.new": "Create new feed lists",
                             "feedlist.list": "List feed lists",
                             "tags.read": "Read tags",
-                            "tags.write": "Write tags"
+                            "tags.write": "Write tags",
+                            "apps.r": "Read apps",
+                            "apps.w": "Write single apps",
+                            "apps.x": "List apps"
                         },
                         "authorizationUrl": "/oauth2/~authorize",
                         "tokenUrl": "/oauth2/~token"
